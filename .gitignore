@@ -9,6 +9,9 @@
 ####################
 # Custom definitions.
 
+# Submodules
+MinecraftForge/
+
 ####################
 # Java
 ####################
