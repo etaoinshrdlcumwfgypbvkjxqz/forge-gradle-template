@@ -1,10 +1,13 @@
 {
+    "gradle": {
+        "distributionUrl": "https://services.gradle.org/distributions-snapshots/gradle-4.10.2-20180920083835+0000-bin.zip"
+    },
     "dependencies": [
         {
             "configuration": "forgeGradleMc",
             "group": "net.minecraftforge",
             "name": "forgeBin",
-            "version": "1.12.2-14.23.5.2807"
+            "version": "1.12.2-14.23.5.2808"
         },
         {
             "configuration": "forgeGradleMcDeps",
@@ -394,17 +397,17 @@
             "configuration": "forgeGradleMcpMappings",
             "group": "de.oceanlabs.mcp",
             "name": "mcp_snapshot",
-            "version": "20190118-1.13.1"
+            "version": "20190120-1.13.1"
         },
         {
             "configuration": "forgeGradleUserDevPackage",
             "group": "net.minecraftforge",
             "name": "forge",
-            "version": "1.12.2-14.23.5.2807"
+            "version": "1.12.2-14.23.5.2808"
         }
     ],
     "minecraft": {
-        "version": "1.12.2-14.23.5.2807",
-        "mappings": "snapshot_20190118"
+        "version": "1.12.2-14.23.5.2808",
+        "mappings": "snapshot_20190120"
     }
 }

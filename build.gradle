@@ -1,66 +1,164 @@
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
+
 import java.nio.channels.Channels
+import java.security.DigestException
+import java.security.MessageDigest
 import java.text.SimpleDateFormat
-import java.util.regex.Pattern
 
 buildscript {
     repositories {
         jcenter()
-        maven {
-            name = "minecraftforge"
-            url = "https://files.minecraftforge.net/maven"
+        project.ext.minecraftForgeMaven = maven {
+            name = "Minecraft Forge"
+            url = 'https://files.minecraftforge.net/maven'
         }
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
     }
     //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
+}
 
-    ext {
-        sectionHeaderNamed = "=========================%s=========================${System.lineSeparator()}"
-        sectionFooter = "==================================================${System.lineSeparator()}"
-        minecraftForgeFilesFile = "$buildDir${File.separator}MinecraftForgeFiles.html"
-        lastGoodSettingsFile = "$buildDir${File.separator}LastGoodSettings.json"
-        minecraftVersion = "latest"
-        minecraftMappings = "latest"
-    }
+ext {
+    PapplyLastGoodSettings = project.hasProperty("applyLastGoodSettings") && Boolean.parseBoolean(applyLastGoodSettings as String)
+    
+    sectionHeaderNamed = "=========================%s=========================${System.lineSeparator()}"
+    sectionFooter = "==================================================${System.lineSeparator()}"
 
-    if (project.hasProperty("applyLastGoodSettings") && Boolean.parseBoolean(applyLastGoodSettings as String)) {
-        logger.quiet("Applying last good settings from '$lastGoodSettingsFile'...")
-        File file = file(lastGoodSettingsFile)
-        if (!file.exists()) throw new FileNotFoundException("'$lastGoodSettingsFile' not found: obtain '$lastGoodSettingsFile' from the repository.")
-        String text = file.text
-        logger.quiet("'$lastGoodSettingsFile':")
-        logger.quiet(text)
-        Object json = new JsonSlurper().parseText(text)
+    lastGoodSettingsFile = "$buildDir${File.separator}last-good-settings.json"
+    dependenciesDirectory = "$buildDir${File.separator}dependencies"
 
-        gradle.projectsLoaded { json.dependencies.each { dependency -> dependencies.add(dependency.configuration as String, "$dependency.group:$dependency.name:$dependency.version", { force = true }) } }
-        project.ext.minecraftVersion = json.minecraft.version
-        project.ext.minecraftMappings = json.minecraft.mappings
-    } else {
-        if (minecraftVersion == "latest") {
-            new FileOutputStream(minecraftForgeFilesFile.toString()).channel.transferFrom(Channels.newChannel(new URL("https://files.minecraftforge.net/maven/net/minecraftforge/forge/").openStream()), 0, Long.MAX_VALUE)
-            project.ext.minecraftVersion = file(minecraftForgeFilesFile).text.find(Pattern.compile("<i class=\"fa promo-latest\"><\\/i>[a-zA-Z ]+<br>\n[ ]+<small>[0-9. -]+<")).find(Pattern.compile("[0-9][0-9. -]+")).replaceAll(" ", "")
-        }
+    gradleVersionsUrl = "https://services.gradle.org/versions"
+    gradleLatestReleaseNightlyJsonUrl = "$gradleVersionsUrl/release-nightly"
+    gradleLatestNightlyJsonUrl = "$gradleVersionsUrl/nightly"
+    gradleAllJsonUrl = "$gradleVersionsUrl/all"
+    gradleDependenciesDirectory = "$dependenciesDirectory${File.separator}gradle"
+    gradleLatestReleaseNightlyJson = "$gradleDependenciesDirectory${File.separator}release-nightly.json"
+    gradleLatestNightlyJson = "$gradleDependenciesDirectory${File.separator}nightly.json"
+    gradleAllJson = "$gradleDependenciesDirectory${File.separator}all.json"
 
-        if (minecraftMappings == "latest") project.ext.minecraftMappings = "snapshot_" + new SimpleDateFormat("yyyyMMdd").format(Calendar.instance.time.previous())
+    minecraftForgeMavenMetadataXmlUrl = "${(minecraftForgeMaven as MavenArtifactRepository).url}/net/minecraftforge/forge/maven-metadata.xml"
+    minecraftForgeMavenMetadataXmlMd5Url = "${minecraftForgeMavenMetadataXmlUrl}.md5"
+    minecraftForgeMavenMetadataXmlSha1Url = "${minecraftForgeMavenMetadataXmlUrl}.sha1"
+    minecraftforgeDependenciesDirectory = "$dependenciesDirectory${File.separator}minecraftForge"
+    minecraftForgeMavenMetadataXml = "$minecraftforgeDependenciesDirectory${File.separator}maven-metadata.xml"
+    minecraftForgeMavenMetadataXmlMd5 = "${minecraftForgeMavenMetadataXml}.md5"
+    minecraftForgeMavenMetadataXmlSha1 = "${minecraftForgeMavenMetadataXml}.sha1"
+
+    gradleDistributionUrl = "https://services.gradle.org/distributions-snapshots/gradle-4.10.2-20180920083835+0000-all.zip"
+    minecraftVersion = "latest"
+    minecraftMappings = "latest"
+
+    url = "https://etaoinshrdlcumwfgypbvkjxqz.github.io/Eventstruck/"
+    updateUrl = url
+    authorList = ["William So"]
+    credits = "Made by ${authorList.first()}."
+    logoFile = ""
+    screenshots = []
+    dependenciesList = []
+}
+
+static boolean mkparentdirs(File file) {
+    return file.parentFile.mkdirs()
+}
+
+static long download(String url, File destination) {
+    mkparentdirs(destination)
+    return new FileOutputStream(destination).channel.transferFrom(Channels.newChannel(new URL(url).openStream()), 0, Long.MAX_VALUE)
+}
+
+void updateGradleWrapperDistributionUrl(String newDistributionUrl) {
+    Wrapper wrapper = tasks.wrapper as Wrapper
+    String oldDistributionUrl = wrapper.distributionUrl.replace(wrapper.distributionType.name().toLowerCase(Locale.ROOT), "all")
+    if (new URL(oldDistributionUrl) != new URL(newDistributionUrl)) {
+        File propertiesFile = wrapper.propertiesFile
+        propertiesFile.text = propertiesFile.text.replace(oldDistributionUrl.replace(":", "\\:"), newDistributionUrl.replace(":", "\\:"))
+        throw new IllegalStateException("Gradle wrapper distribution URL updated from '$oldDistributionUrl' to '$newDistributionUrl': please re-run the build with the same command to apply the changes.")
     }
 }
 
-apply plugin: 'java'
+if (PapplyLastGoodSettings) {
+    logger.quiet("Applying last good settings from '$lastGoodSettingsFile'...")
+    File jsonFile = file(lastGoodSettingsFile)
+    if (!jsonFile.exists()) throw new FileNotFoundException("'$lastGoodSettingsFile' not found: obtain '$lastGoodSettingsFile' from the repository.")
+    String jsonText = jsonFile.text
+    logger.quiet("'$lastGoodSettingsFile':")
+    logger.quiet(jsonText)
+    Object json = new JsonSlurper().parseText(jsonText)
+
+    updateGradleWrapperDistributionUrl(project.ext.gradleDistributionUrl = json.gradle.distributionUrl as String)
+    gradle.projectsLoaded { json.dependencies.each { dependency -> dependencies.add(dependency.configuration as String, "$dependency.group:$dependency.name:$dependency.version", { force = true }) } }
+    project.ext.minecraftVersion = json.minecraft.version
+    project.ext.minecraftMappings = json.minecraft.mappings
+} else {
+    if (gradleDistributionUrl == "latest") {
+        JsonSlurper jsonSlurper = new JsonSlurper()
+
+        File gradleLatestReleaseNightlyJsonFile = file(gradleLatestReleaseNightlyJson)
+        download(gradleLatestReleaseNightlyJsonUrl, gradleLatestReleaseNightlyJsonFile)
+        def json = jsonSlurper.parse(gradleLatestReleaseNightlyJsonFile)
+
+        if (json.broken as boolean) {
+            File gradleLatestNightlyJsonFile = file(gradleLatestNightlyJson)
+            download(gradleLatestNightlyJsonUrl, gradleLatestNightlyJsonFile)
+            json = jsonSlurper.parse(gradleLatestNightlyJsonFile)
+
+            if (json.broken as boolean) {
+                File gradleAllJsonFile = file(gradleAllJson)
+                download(gradleAllJsonUrl, gradleAllJsonFile)
+                json = jsonSlurper.parse(gradleAllJsonFile)
+
+                Map<String, Object> temp
+                for (Map<String, Object> gradleDistributionJson : json as List<Map<String, Object>>) {
+                    if (!gradleDistributionJson.broken as boolean) {
+                        temp = gradleDistributionJson
+                        break
+                    }
+                }
+                if (temp != null) json = temp
+                else throw new FileNotFoundException("Cannot find a working Gradle distribution from '$gradleAllJsonUrl'!")
+            }
+        }
+        updateGradleWrapperDistributionUrl(project.ext.gradleDistributionUrl = (json.downloadUrl as String).replace("bin", "all"))
+    } else updateGradleWrapperDistributionUrl(gradleDistributionUrl)
+
+    if (minecraftVersion == "latest") {
+        File minecraftForgeMavenMetadataXmlFile = file(minecraftForgeMavenMetadataXml)
+        download(minecraftForgeMavenMetadataXmlUrl, minecraftForgeMavenMetadataXmlFile)
+        File minecraftForgeMavenMetadataXmlMd5File = file(minecraftForgeMavenMetadataXmlMd5)
+        download(minecraftForgeMavenMetadataXmlMd5Url, minecraftForgeMavenMetadataXmlMd5File)
+        File minecraftForgeMavenMetadataXmlSha1File = file(minecraftForgeMavenMetadataXmlSha1)
+        download(minecraftForgeMavenMetadataXmlSha1Url, minecraftForgeMavenMetadataXmlSha1File)
+
+        String md5 = MessageDigest.getInstance("MD5").digest(minecraftForgeMavenMetadataXmlFile.bytes).encodeHex().toString()
+        String expectedMd5 = minecraftForgeMavenMetadataXmlMd5File.text.trim()
+        if (!expectedMd5.equalsIgnoreCase(md5)) throw new DigestException("'$minecraftForgeMavenMetadataXmlUrl' MD5 is '$md5', which is different from MD5 '$expectedMd5' from '$minecraftForgeMavenMetadataXmlMd5Url'.")
+
+        String sha1 = MessageDigest.getInstance("SHA-1").digest(minecraftForgeMavenMetadataXmlFile.bytes).encodeHex().toString()
+        String expectedSha1 = minecraftForgeMavenMetadataXmlSha1File.text.trim()
+        if (!expectedSha1.equalsIgnoreCase(sha1)) throw new DigestException("'$minecraftForgeMavenMetadataXmlUrl' SHA-1 is '$sha1', which is different from SHA-1 '$expectedSha1' from '$minecraftForgeMavenMetadataXmlSha1Url'.")
+
+        project.ext.minecraftVersion = new XmlSlurper().parse(minecraftForgeMavenMetadataXmlFile).versioning.release as String
+    }
+
+    if (minecraftMappings == "latest") project.ext.minecraftMappings = "snapshot_" + new SimpleDateFormat("yyyyMMdd").format(Calendar.instance.time.previous())
+}
+
+apply plugin: "java"
 apply plugin: 'net.minecraftforge.gradle.forge'
 
 version = "1.0.0"
 group = "com.etaoinshrdlcumwfgypbvkjxqz.games.mods.minecraft" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = name
+description = "This mod adds events to make Minecraft more interesting!"
 
 // Need this here so eclipse task generates correctly.
 sourceCompatibility = 1.8
-targetCompatibility = 11
+targetCompatibility = 1.8
 compileJava {
     sourceCompatibility = 1.8
-    targetCompatibility = 11
+    targetCompatibility = 1.8
 }
 
 minecraft {
@@ -103,25 +201,88 @@ dependencies {
 sourceSets {
     main
     test
+    api
 }
 
+static <E> String processResourcesList(List<E> list) {
+    if (list.empty) return ""
+    else list.toListString().replace("[", "\"").replace("]", "\"").replace(", ", "\", \"")
+}
 processResources {
-    // this will ensure that this task is redone when the versions change.
-    inputs.property "version", project.version
+    // this will ensure that this task is redone when the variables change.
+    inputs.property "modid", name
+    inputs.property "name", projectDir.name
+    inputs.property "description", description
+    inputs.property 'version', version
+    inputs.property 'mcversion', project.minecraft.version
+    inputs.property "url", url
+    inputs.property "updateUrl", updateUrl
+    inputs.property "authorList", authorList
+    inputs.property "credits", credits
+    inputs.property "logoFile", logoFile
+    inputs.property "screenshots", screenshots
+    inputs.property "dependencies", dependenciesList
+
+    // replace stuff in the to-be-processed files, nothing else
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info', "pack.mcmeta"
+
+        // replace variables
+        expand "modid": inputs.properties.get("modid"),
+                "name": inputs.properties.get("name"),
+                "description": inputs.properties.get("description"),
+                'version': inputs.properties.get("version"),
+                'mcversion': inputs.properties.get("mcversion"),
+                "url": inputs.properties.get("url"),
+                "updateUrl": inputs.properties.get("updateUrl"),
+                "authorList": processResourcesList(inputs.properties.get("authorList") as List<String>),
+                "credits": inputs.properties.get("credits"),
+                "logoFile": inputs.properties.get("logoFile"),
+                "screenshots": processResourcesList(inputs.properties.get("screenshots") as List<String>),
+                "dependencies": processResourcesList(inputs.properties.get("dependencies") as List<String>)
+    }
+
+    // copy everything else except the processed files
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info', "pack.mcmeta"
+    }
+}
+processTestResources {
+    inputs.property "modid", name
+    inputs.property "name", projectDir.name
+    inputs.property "description", description
+    inputs.property "version", version
     inputs.property "mcversion", project.minecraft.version
-
-    // replace stuff in mcmod.info, nothing else
+    inputs.property "url", url
+    inputs.property "updateUrl", updateUrl
+    inputs.property "authorList", authorList
+    inputs.property "credits", credits
+    inputs.property "logoFile", logoFile
+    inputs.property "screenshots", screenshots
+    inputs.property "dependencies", dependenciesList
+    
     from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'
+        include "mcmod.info", "pack.mcmeta"
 
-        // replace version and mcversion
-        expand 'version':project.version, 'mcversion':project.minecraft.version
+        // replace variables
+        expand "modid": inputs.properties.get("modid"),
+                "name": inputs.properties.get("name"),
+                "description": inputs.properties.get("description"),
+                "version": inputs.properties.get("version"),
+                "mcversion": inputs.properties.get("mcversion"),
+                "url": inputs.properties.get("url"),
+                "updateUrl": inputs.properties.get("updateUrl"),
+                "authorList": processResourcesList(inputs.properties.get("authorList") as List<String>),
+                "credits": inputs.properties.get("credits"),
+                "logoFile": inputs.properties.get("logoFile"),
+                "screenshots": processResourcesList(inputs.properties.get("screenshots") as List<String>),
+                "dependencies": processResourcesList(inputs.properties.get("dependencies") as List<String>)
     }
 
-    // copy everything else except the mcmod.info
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
-    }
+    from sourceSets.test.resources.srcDirs
+}
+processApiResources {
+    from sourceSets.api.resources.srcDirs
 }
 
 task saveCurrentGoodSettings(group: "build", description: "Saves current good settings to '$lastGoodSettingsFile'") {
@@ -132,13 +293,14 @@ task saveCurrentGoodSettings(group: "build", description: "Saves current good se
         file.createNewFile()
 
         Map json = [
+                gradle: [ distributionUrl: (tasks.wrapper as Wrapper).distributionUrl ],
                 dependencies: [],
                 minecraft: [
                         version: minecraftVersion,
                         mappings: minecraftMappings
                 ]
         ]
-        configurations.each { configuration -> configuration.allDependencies.each { dependency -> if (dependency.name != "unspecified") json.dependencies.add([configuration: configuration.name, group: dependency.group, name: dependency.name, version: dependency.version]) } }
+        configurations.each { configuration -> configuration.allDependencies.each { dependency -> if (dependency.name != "unspecified") (json.dependencies as List<Map<String, String>>).add([configuration: configuration.name, group: dependency.group, name: dependency.name, version: dependency.version]) } }
 
         file.write(new JsonBuilder(json).toPrettyString())
 
@@ -149,8 +311,8 @@ task printCurrentGoodSettings(group: "build", description: "Prints current good 
     enabled = false
     doLast {
         File file = file(project.ext.lastGoodSettingsFile)
-        if (!file.exists()) throw new FileNotFoundException("'$lastGoodSettingsFile' not found: run '$tasks.saveCurrentGoodSettings.name' before running '$name'.".toString())
-        logger.quiet("'$lastGoodSettingsFile':".toString())
+        if (!enabled || !file.exists()) throw new FileNotFoundException("'$lastGoodSettingsFile' not found: run '$tasks.saveCurrentGoodSettings.name' before running '$name'.")
+        logger.quiet("'$lastGoodSettingsFile':")
         logger.quiet(file.text)
     }
 }
