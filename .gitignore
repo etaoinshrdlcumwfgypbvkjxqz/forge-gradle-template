@@ -172,7 +172,7 @@ fabric.properties
 
 .gradle
 # /build/
-/build/*
+build/
 
 # Ignore Gradle GUI config
 gradle-app.setting
@@ -191,5 +191,5 @@ gradle-app.setting
 ####################
 # Custom definitions.
 
-# Last good settings
-!LastGoodSettings.json
+# Custom files
+ext.properties
