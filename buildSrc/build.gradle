@@ -9,10 +9,14 @@ import java.security.DigestException
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
 
+String rootDir = "$projectDir${File.separator}.."
+
+apply from: "$rootDir${File.separator}gradle${File.separator}ext.properties.gradle"
+
 ext {
     PapplyLastGoodSettings = project.hasProperty("applyLastGoodSettings") && Boolean.parseBoolean(applyLastGoodSettings as String)
 
-    lastGoodSettingsFile = "$projectDir${File.separator}..${File.separator}gradle${File.separator}last-good-settings.json"
+    lastGoodSettingsFile = "$rootDir${File.separator}gradle${File.separator}last-good-settings.json"
     dependenciesDirectory = "$buildDir${File.separator}dependencies"
 
     gradleVersionsUrl = "https://services.gradle.org/versions"
@@ -37,21 +41,20 @@ ext {
     minecraftMappings = "latest"
 }
 
-static boolean mkparentdirs(File file) {
-    return file.parentFile.mkdirs()
-}
-
 static long download(String url, File destination) {
-    mkparentdirs(destination)
+    destination.parentFile.mkdirs()
     return new FileOutputStream(destination).channel.transferFrom(Channels.newChannel(new URL(url).openStream()), 0, Long.MAX_VALUE)
 }
 
 void updateGradleWrapperDistributionUrl(String newDistributionUrl) {
     Wrapper wrapper = tasks.wrapper as Wrapper
-    String oldDistributionUrl = wrapper.distributionUrl.replace(wrapper.distributionType.name().toLowerCase(Locale.ROOT), "all")
+    Properties properties = new Properties()
+    File propertiesFile = file(wrapper.propertiesFile.absolutePath.replace("buildSrc", ""))
+    properties.load(new FileInputStream(propertiesFile))
+    String oldDistributionUrl = properties.distributionUrl
     if (new URL(oldDistributionUrl) != new URL(newDistributionUrl)) {
-        File propertiesFile = wrapper.propertiesFile
-        propertiesFile.text = propertiesFile.text.replace(oldDistributionUrl.replace(":", "\\:"), newDistributionUrl.replace(":", "\\:"))
+        properties.distributionUrl = newDistributionUrl
+        properties.store(new FileOutputStream(propertiesFile), null)
         throw new IllegalStateException("Gradle wrapper distribution URL updated from '$oldDistributionUrl' to '$newDistributionUrl': please re-run the build with the same command to apply the changes.")
     }
 }
@@ -123,4 +126,4 @@ if (PapplyLastGoodSettings) {
     if (minecraftMappings == "latest") project.ext.minecraftMappings = "snapshot_" + new SimpleDateFormat("yyyyMMdd").format(Calendar.instance.time.previous())
 }
 
-apply from: "..${File.separator}gradle${File.separator}ext${File.separator}storeExt.gradle"
+storeExt()

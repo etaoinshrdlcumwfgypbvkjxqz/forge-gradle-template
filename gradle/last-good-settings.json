@@ -397,7 +397,7 @@
             "configuration": "forgeGradleMcpMappings",
             "group": "de.oceanlabs.mcp",
             "name": "mcp_snapshot",
-            "version": "20190122-1.13.1"
+            "version": "20190126-1.13.1"
         },
         {
             "configuration": "forgeGradleUserDevPackage",
@@ -408,6 +408,6 @@
     ],
     "minecraft": {
         "version": "1.12.2-14.23.5.2808",
-        "mappings": "snapshot_20190122"
+        "mappings": "snapshot_20190126"
     }
 }

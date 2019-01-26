@@ -1,0 +1,19 @@
+//////////////////////////////////////////////////
+// Extra Properties Properties (ext.properties)
+//////////////////////////////////////////////////
+
+List<String> blacklist = ["storeExt", "loadExt"]
+
+project.ext.storeExt = {
+    Properties extProperties = new Properties()
+    project.ext.properties.each { property -> if (!blacklist.contains(property.key)) extProperties.setProperty(property.key as String, property.value.toString()) }
+    File extPropertiesFile = file("$projectDir${File.separator}ext.properties")
+    if (!extPropertiesFile.exists()) extPropertiesFile.createNewFile()
+    extProperties.store(new FileOutputStream(extPropertiesFile), "Extra Properties")
+}
+
+project.ext.loadExt = { String extPropertiesPath ->
+    Properties extProperties = new Properties()
+    extProperties.load(new FileInputStream(extPropertiesPath))
+    extProperties.each { property -> if (!blacklist.contains(property.key)) project.ext."$property.key" = property.value }
+}
