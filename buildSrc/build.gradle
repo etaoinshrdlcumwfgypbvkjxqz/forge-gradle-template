@@ -55,6 +55,7 @@ void updateGradleWrapperDistributionUrl(String newDistributionUrl) {
     File propertiesFile = file wrapper.propertiesFile.absolutePath.replace("buildSrc", "")
     properties.load new FileInputStream(propertiesFile)
     String oldDistributionUrl = properties.distributionUrl
+    newDistributionUrl = newDistributionUrl.replace(Wrapper.DistributionType.BIN.name().toLowerCase(Locale.ROOT), Wrapper.DistributionType.ALL.name().toLowerCase(Locale.ROOT))
     URL newDistribution = new URL(newDistributionUrl)
     HttpURLConnection huc = newDistribution.openConnection() as HttpURLConnection
     huc.requestMethod = "HEAD"
@@ -105,7 +106,7 @@ if (PapplyLastGoodSettings) {
                     }
                 }
                 if (temp != null) json = temp
-                else throw new FileNotFoundException("Cannot find a working Gradle distribution from '$gradleAllJsonUrl'!")
+                else throw new FileNotFoundException("Cannot find a working Gradle distribution from '$gradleAllJsonUrl'.")
             }
         }
         updateGradleWrapperDistributionUrl(project.ext.gradleDistributionUrl = (json.downloadUrl as String).replace("bin", "all"))
