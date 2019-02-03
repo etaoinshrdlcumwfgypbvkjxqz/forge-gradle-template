@@ -1,8 +1,26 @@
 {
     "gradle": {
-        "distributionUrl": "https://services.gradle.org/distributions-snapshots/gradle-4.10.2-20180920083835+0000-bin.zip"
+        "distributionUrl": "https://services.gradle.org/distributions-snapshots/gradle-4.10.2-20180920083835+0000-all.zip"
     },
     "dependencies": [
+        {
+            "configuration": "apiCompileClasspath",
+            "group": "org.apiguardian",
+            "name": "apiguardian-api",
+            "version": "1.1.0-SNAPSHOT"
+        },
+        {
+            "configuration": "apiImplementation",
+            "group": "org.apiguardian",
+            "name": "apiguardian-api",
+            "version": "+"
+        },
+        {
+            "configuration": "apiRuntimeClasspath",
+            "group": "org.apiguardian",
+            "name": "apiguardian-api",
+            "version": "1.1.0-SNAPSHOT"
+        },
         {
             "configuration": "forgeGradleMc",
             "group": "net.minecraftforge",
@@ -164,12 +182,6 @@
             "group": "org.jline",
             "name": "jline",
             "version": "3.5.1"
-        },
-        {
-            "configuration": "forgeGradleMcDeps",
-            "group": "com.google.code.findbugs",
-            "name": "jsr305",
-            "version": "1.3.9"
         },
         {
             "configuration": "forgeGradleMcDeps",
@@ -397,17 +409,65 @@
             "configuration": "forgeGradleMcpMappings",
             "group": "de.oceanlabs.mcp",
             "name": "mcp_snapshot",
-            "version": "20190202-1.13.1"
+            "version": "20190203-1.13.1"
         },
         {
             "configuration": "forgeGradleUserDevPackage",
             "group": "net.minecraftforge",
             "name": "forge",
             "version": "1.12.2-14.23.5.2810"
+        },
+        {
+            "configuration": "testCompileClasspath",
+            "group": "org.junit.jupiter",
+            "name": "junit-jupiter-api",
+            "version": "5.4.0-RC2"
+        },
+        {
+            "configuration": "testCompileClasspath",
+            "group": "org.junit.jupiter",
+            "name": "junit-jupiter-params",
+            "version": "5.4.0-RC2"
+        },
+        {
+            "configuration": "testImplementation",
+            "group": "org.junit.jupiter",
+            "name": "junit-jupiter-api",
+            "version": "+"
+        },
+        {
+            "configuration": "testImplementation",
+            "group": "org.junit.jupiter",
+            "name": "junit-jupiter-params",
+            "version": "+"
+        },
+        {
+            "configuration": "testRuntimeClasspath",
+            "group": "org.junit.jupiter",
+            "name": "junit-jupiter-api",
+            "version": "5.4.0-RC2"
+        },
+        {
+            "configuration": "testRuntimeClasspath",
+            "group": "org.junit.jupiter",
+            "name": "junit-jupiter-params",
+            "version": "5.4.0-RC2"
+        },
+        {
+            "configuration": "testRuntimeClasspath",
+            "group": "org.junit.jupiter",
+            "name": "junit-jupiter-engine",
+            "version": "5.4.0-RC2"
+        },
+        {
+            "configuration": "testRuntimeOnly",
+            "group": "org.junit.jupiter",
+            "name": "junit-jupiter-engine",
+            "version": "+"
         }
     ],
     "minecraft": {
         "version": "1.12.2-14.23.5.2810",
-        "mappings": "snapshot_20190202"
+        "mappings": "snapshot_20190203"
     }
 }

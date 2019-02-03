@@ -21,15 +21,31 @@ buildscript {
 
 plugins {
     id "java"
+    id "eclipse"
+    id "idea"
 }
 apply plugin: "net.minecraftforge.gradle.forge"
 
 apply from: "$rootDir${File.separator}gradle${File.separator}io${File.separator}properties${File.separator}properties.gradle"
 apply from: "$rootDir${File.separator}gradle${File.separator}io${File.separator}properties${File.separator}ext.properties.gradle"
 
-loadExt "$rootDir${File.separator}buildSrc${File.separator}ext.properties"
-loadExt "$rootDir${File.separator}settings.properties"
+repositories {
+    /*
+    jcenter()
+    maven {
+        name = "Minecraft Forge"
+        url = "https://files.minecraftforge.net/maven"
+    }
+    */
+    mavenCentral()
+    maven {
+        name = "Sonatype Snapshots"
+        url = "https://oss.sonatype.org/content/repositories/snapshots"
+    }
+}
 
+loadExt "$rootDir${File.separator}settings.properties"
+loadExt "$rootDir${File.separator}buildSrc${File.separator}ext.properties"
 ext {
     properName = name.capitalize()
 
@@ -46,8 +62,8 @@ ext {
     final_ = final_.toBoolean()
     pre = pre.toBoolean()
     releaseCandidate = releaseCandidate.toInteger()
-    if (final_ && pre) throw new IllegalArgumentException("'final_' and 'pre' are both 'true'!")
-    if ((final_ || pre) && releaseCandidate != 0) throw new IllegalArgumentException("'${final_ ? "final_" : "pre"}' is 'true' while 'releaseCandidate' is not '0' but '$releaseCandidate'.")
+    if (final_ && pre) throw new IllegalArgumentException("\'final_\' and \'pre\' are both 'true'!")
+    if ((final_ || pre) && releaseCandidate != 0) throw new IllegalArgumentException("\'${final_ ? "final_" : "pre"}\' is \'true\' while \'releaseCandidate\' is not \'0\' but \'$releaseCandidate\'.")
 
     authorList = ["William So"]
     credits = "Made by ${authorList.first()}."
@@ -107,6 +123,14 @@ dependencies {
     'testCompile' is superseded by 'testImplementation'.
     'testRuntime' is superseded by 'testRuntimeOnly'.
      */
+
+    // JUnit Jupiter
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion"
+    testImplementation "org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion"
+
+    // @API Guardian
+    apiImplementation "org.apiguardian:apiguardian-api:$apiGuardianVersion"
 }
 
 sourceSets {
@@ -174,63 +198,39 @@ processResources {
     }
 }
 processTestResources {
-    inputs.property "modId", project.name
-    inputs.property "name", properName
-    inputs.property "description", description
-    inputs.property "version", version
-    inputs.property "minecraftVersion", project.minecraft.version
-    inputs.property "url", url
-    inputs.property "updateUrl", updateUrl
-    inputs.property "updateJSON", updateJSON
-    inputs.property "authorList", processResourcesList(authorList as List<String>)
-    inputs.property "credits", credits
-    inputs.property "logoFile", logoFile
-    inputs.property "screenshots", processResourcesList(screenshots as List<String>)
-    inputs.property "requiredMods", processResourcesList(requiredMods as List<String>)
-    inputs.property "dependencies", processResourcesList(dependencies_ as List<String>)
-    inputs.property "dependants", processResourcesList(dependants as List<String>)
-
-    from(sourceSets.main.resources.srcDirs) {
-        include "mcmod.info", "pack.mcmeta"
-
-        expand "modId": inputs.properties.modId,
-                "name": inputs.properties.name,
-                "description": inputs.properties.description,
-                "version": inputs.properties.version,
-                "minecraftVersion": inputs.properties.minecraftVersion,
-                "url": inputs.properties.url,
-                "updateUrl": inputs.properties.updateUrl,
-                "updateJSON": inputs.properties.updateJSON,
-                "authorList": inputs.properties.authorList,
-                "credits": inputs.properties.credits,
-                "logoFile": inputs.properties.logoFile,
-                "screenshots": inputs.properties.screenshots,
-                "requiredMods": inputs.properties.requiredMods,
-                "dependencies": inputs.properties.dependencies,
-                "dependants": inputs.properties.dependants
-    }
-
     from sourceSets.test.resources.srcDirs
 }
 processApiResources {
     from sourceSets.api.resources.srcDirs
 }
 
-task saveCurrentGoodSettings(group: "build", description: "Saves current good settings to '$lastGoodSettingsFile'.") {
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "started", "passed", "skipped", "failed", "standard_out", "standard_error"
+    }
+}
+
+task saveCurrentGoodSettings(group: "build", description: "Saves current good settings to \'$lastGoodSettingsFile\'.") {
     outputs.file lastGoodSettingsFile
 
     doLast {
+        Wrapper wrapper = tasks.wrapper as Wrapper
         Map<String, Object> json = [
-                gradle: [ distributionUrl: (tasks.wrapper as Wrapper).distributionUrl ],
+                gradle: [ distributionUrl: wrapper.distributionUrl.replace(wrapper.distributionType.name().toLowerCase(Locale.ROOT), Wrapper.DistributionType.ALL.name().toLowerCase(Locale.ROOT)) ],
                 dependencies: [],
                 minecraft: [
                         version: minecraftForgeVersion,
                         mappings: minecraftMappings
                 ]
         ]
-        configurations.each { configuration -> configuration.allDependencies.each { dependency -> if (dependency.name != "unspecified") json.dependencies.add([configuration: configuration.name, group: dependency.group, name: dependency.name, version: dependency.version]) } }
+        
+        configurations.each { configuration ->
+            if (configuration.canBeResolved) configuration.resolvedConfiguration.firstLevelModuleDependencies.each { dependency -> json.dependencies.add([configuration: configuration.name, group: dependency.moduleGroup, name: dependency.moduleName, version: dependency.moduleVersion]) }
+            else configuration.dependencies.each { dependency -> json.dependencies.add([configuration: configuration.name, group: dependency.group, name: dependency.name, version: dependency.version]) }
+        }
         String jsonText = new JsonBuilder(json).toPrettyString()
-
+        
         File file = file lastGoodSettingsFile
         if (!file.exists()) {
             file.parentFile.mkdirs()
