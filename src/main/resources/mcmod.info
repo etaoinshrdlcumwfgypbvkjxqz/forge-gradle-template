@@ -1,10 +1,10 @@
 [
   {
-    "modid": "${modid}",
+    "modid": "${modId}",
     "name": "${name}",
     "description": "${description}",
     "version": "${version}",
-    "mcversion": "${mcversion}",
+    "mcversion": "${minecraftVersion}",
     "url": "${url}",
     "updateUrl": "${updateUrl}",
     "updateJSON": "${updateJSON}",

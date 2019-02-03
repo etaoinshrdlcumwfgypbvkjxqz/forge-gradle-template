@@ -11,10 +11,13 @@ import java.text.SimpleDateFormat
 
 String rootDir = "$projectDir${File.separator}.."
 
-apply from: "$rootDir${File.separator}gradle${File.separator}ext.properties.gradle"
+apply from: "$rootDir${File.separator}gradle${File.separator}io${File.separator}properties${File.separator}properties.gradle"
+apply from: "$rootDir${File.separator}gradle${File.separator}io${File.separator}properties${File.separator}ext.properties.gradle"
+
+loadExt "$rootDir${File.separator}settings.properties"
 
 ext {
-    PapplyLastGoodSettings = project.hasProperty("applyLastGoodSettings") && Boolean.parseBoolean(applyLastGoodSettings as String)
+    PapplyLastGoodSettings = project.hasProperty("applyLastGoodSettings") && applyLastGoodSettings.toBoolean()
 
     lastGoodSettingsFile = "$rootDir${File.separator}gradle${File.separator}last-good-settings.json"
     dependenciesDirectory = "$buildDir${File.separator}dependencies"
@@ -36,9 +39,9 @@ ext {
     minecraftForgeMavenMetadataXmlMd5 = "${minecraftForgeMavenMetadataXml}.md5"
     minecraftForgeMavenMetadataXmlSha1 = "${minecraftForgeMavenMetadataXml}.sha1"
 
-    gradleDistributionUrl = "https://services.gradle.org/distributions-snapshots/gradle-4.10.2-20180920083835+0000-all.zip"
-    minecraftVersion = "latest"
-    minecraftMappings = "latest"
+    gradleDistributionUrl = gradleDistributionUrl_
+    minecraftForgeVersion = minecraftForgeVersion_
+    minecraftMappings = minecraftMappings_
 }
 
 static long download(String url, File destination) {
@@ -49,10 +52,14 @@ static long download(String url, File destination) {
 void updateGradleWrapperDistributionUrl(String newDistributionUrl) {
     Wrapper wrapper = tasks.wrapper as Wrapper
     Properties properties = new Properties()
-    File propertiesFile = file(wrapper.propertiesFile.absolutePath.replace("buildSrc", ""))
-    properties.load(new FileInputStream(propertiesFile))
+    File propertiesFile = file wrapper.propertiesFile.absolutePath.replace("buildSrc", "")
+    properties.load new FileInputStream(propertiesFile)
     String oldDistributionUrl = properties.distributionUrl
-    if (new URL(oldDistributionUrl) != new URL(newDistributionUrl)) {
+    URL newDistribution = new URL(newDistributionUrl)
+    HttpURLConnection huc = newDistribution.openConnection() as HttpURLConnection
+    huc.requestMethod = "HEAD"
+    if (huc.responseCode != HttpURLConnection.HTTP_OK) throw new FileNotFoundException("'$newDistributionUrl' returns '$huc.responseCode' instead of '$HttpURLConnection.HTTP_OK'.")
+    if (new URL(oldDistributionUrl) != newDistribution) {
         properties.distributionUrl = newDistributionUrl
         properties.store(new FileOutputStream(propertiesFile), null)
         throw new IllegalStateException("Gradle wrapper distribution URL updated from '$oldDistributionUrl' to '$newDistributionUrl': please re-run the build with the same command to apply the changes.")
@@ -60,17 +67,17 @@ void updateGradleWrapperDistributionUrl(String newDistributionUrl) {
 }
 
 if (PapplyLastGoodSettings) {
-    logger.quiet("Applying last good settings from '$lastGoodSettingsFile'...")
+    logger.lifecycle "Applying last good settings from '$lastGoodSettingsFile'..."
     File jsonFile = file(lastGoodSettingsFile)
     if (!jsonFile.exists()) throw new FileNotFoundException("'$lastGoodSettingsFile' not found: obtain '$lastGoodSettingsFile' from the repository.")
     String jsonText = jsonFile.text
-    logger.quiet("'$lastGoodSettingsFile':")
-    logger.quiet(jsonText)
+    logger.info "'$lastGoodSettingsFile':"
+    logger.info jsonText
     Object json = new JsonSlurper().parseText(jsonText)
 
     updateGradleWrapperDistributionUrl(project.ext.gradleDistributionUrl = json.gradle.distributionUrl as String)
     gradle.projectsLoaded { json.dependencies.each { dependency -> dependencies.add(dependency.configuration as String, "$dependency.group:$dependency.name:$dependency.version", { force = true }) } }
-    project.ext.minecraftVersion = json.minecraft.version
+    project.ext.minecraftForgeVersion = json.minecraft.version
     project.ext.minecraftMappings = json.minecraft.mappings
 } else {
     if (gradleDistributionUrl == "latest") {
@@ -104,7 +111,7 @@ if (PapplyLastGoodSettings) {
         updateGradleWrapperDistributionUrl(project.ext.gradleDistributionUrl = (json.downloadUrl as String).replace("bin", "all"))
     } else updateGradleWrapperDistributionUrl(gradleDistributionUrl)
 
-    if (minecraftVersion == "latest") {
+    if (minecraftForgeVersion == "latest") {
         File minecraftForgeMavenMetadataXmlFile = file(minecraftForgeMavenMetadataXml)
         download(minecraftForgeMavenMetadataXmlUrl.toString(), minecraftForgeMavenMetadataXmlFile)
         File minecraftForgeMavenMetadataXmlMd5File = file(minecraftForgeMavenMetadataXmlMd5)
@@ -120,7 +127,7 @@ if (PapplyLastGoodSettings) {
         String expectedSha1 = minecraftForgeMavenMetadataXmlSha1File.text.trim()
         if (!expectedSha1.equalsIgnoreCase(sha1)) throw new DigestException("'$minecraftForgeMavenMetadataXmlUrl' SHA-1 is '$sha1', which is different from SHA-1 '$expectedSha1' from '$minecraftForgeMavenMetadataXmlSha1Url'.")
 
-        project.ext.minecraftVersion = new XmlSlurper().parse(minecraftForgeMavenMetadataXmlFile).versioning.release as String
+        project.ext.minecraftForgeVersion = new XmlSlurper().parse(minecraftForgeMavenMetadataXmlFile).versioning.release as String
     }
 
     if (minecraftMappings == "latest") project.ext.minecraftMappings = "snapshot_" + new SimpleDateFormat("yyyyMMdd").format(Calendar.instance.time.previous())

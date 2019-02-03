@@ -1,0 +1,9 @@
+//////////////////////////////////////////////////
+// Extra Properties Properties (ext.properties)
+//////////////////////////////////////////////////
+
+if (!project.ext.has("storeProperties") || !project.ext.has("loadProperties")) throw new IllegalStateException("Apply 'properties.gradle' before applying 'ext.properties.gradle'.")
+List<String> blacklist = ["storeProperties", "loadProperties", "storeExt", "loadExt"]
+
+project.ext.storeExt = { String extPropertiesPath = "$projectDir${File.separator}ext.properties" -> storeProperties new Properties((project.ext.properties.findAll { key, value -> !blacklist.contains(key)}).collectEntries { key, value -> [key, value.toString()]}), extPropertiesPath, "Extra Properties" }
+project.ext.loadExt = { String extPropertiesPath = "$projectDir${File.separator}ext.properties" -> (loadProperties(extPropertiesPath).findAll { key, value -> !blacklist.contains(key)}).each { key, value -> project.ext."$key" = value } }
