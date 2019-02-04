@@ -24,6 +24,9 @@ matrix:
     - env: PbuildType=DEBUG PapplyLastGoodSettings=true
     - env: PbuildType=RELEASE PapplyLastGoodSettings=true
 
+before_install:
+  - chmod +x ./gradlew
+
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
