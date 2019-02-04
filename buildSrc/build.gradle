@@ -17,7 +17,7 @@ apply from: "$rootDir${File.separator}gradle${File.separator}io${File.separator}
 
 (loadProperties("$rootDir${File.separator}gradle.properties").findAll { key, value -> key.contains "org.gradle.project."}).each { key, value -> project.ext."${key.replace "org.gradle.project.", ""}" = value}
 ext {
-    PapplyLastGoodSettings = project.hasProperty("applyLastGoodSettings") && applyLastGoodSettings.toBoolean()
+    applyLastGoodSettings = project.hasProperty("applyLastGoodSettings") && applyLastGoodSettings.toBoolean()
 
     lastGoodSettingsFile = "$rootDir${File.separator}gradle${File.separator}last-good-settings.json"
     dependenciesDirectory = "$buildDir${File.separator}dependencies"
@@ -80,7 +80,7 @@ void updateGradleWrapperDistributionUrl(String newDistributionUrl) {
     }
 }
 
-if (PapplyLastGoodSettings) {
+if (applyLastGoodSettings) {
     logger.lifecycle "Applying last good settings from \'$lastGoodSettingsFile\'..."
     File jsonFile = file lastGoodSettingsFile
     if (!jsonFile.exists()) throw new FileNotFoundException("'$lastGoodSettingsFile' not found: obtain '$lastGoodSettingsFile' from the repository.")

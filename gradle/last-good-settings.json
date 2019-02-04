@@ -24,7 +24,7 @@
         {
             "configuration": "forgeGradleMc",
             "group": "net.minecraftforge",
-            "name": "forgeBin",
+            "name": "forgeSrc",
             "version": "1.12.2-14.23.5.2810"
         },
         {

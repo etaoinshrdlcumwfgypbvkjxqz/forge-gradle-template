@@ -46,6 +46,8 @@ repositories {
 
 loadExt "$rootDir${File.separator}buildSrc${File.separator}ext.properties"
 ext {
+    buildType = project.hasProperty("buildType") ? buildType : "DEBUG"
+
     properName = name.capitalize()
 
     minecraftVersion = (minecraftForgeVersion as String).split("-").first()
@@ -172,10 +174,11 @@ processResources {
     inputs.property "requiredMods", processResourcesList(requiredMods as List<String>)
     inputs.property "dependencies", processResourcesList(project.ext.dependencies as List<String>)
     inputs.property "dependants", processResourcesList(dependants as List<String>)
+    inputs.property "buildType", buildType
 
     // replace stuff in the to-be-processed files, nothing else
     from(sourceSets.main.resources.srcDirs) {
-        include "mcmod.info", "pack.mcmeta"
+        include "mcmod.info", "pack.mcmeta", "version.properties"
 
         // replace variables
         expand "modId": inputs.properties.modId,
@@ -192,12 +195,13 @@ processResources {
                 "screenshots": inputs.properties.screenshots,
                 "requiredMods": inputs.properties.requiredMods,
                 "dependencies": inputs.properties.dependencies,
-                "dependants": inputs.properties.dependants
+                "dependants": inputs.properties.dependants,
+                "buildType": inputs.properties.buildType
     }
 
     // copy everything else except the processed files
     from(sourceSets.main.resources.srcDirs) {
-        exclude "mcmod.info", "pack.mcmeta"
+        exclude "mcmod.info", "pack.mcmeta", "version.properties"
     }
 }
 processTestResources {
@@ -216,7 +220,7 @@ test {
 
 task saveCurrentGoodSettings(group: "build", description: "Saves current good settings to \'$lastGoodSettingsFile\'.") {
     outputs.file lastGoodSettingsFile
-
+    
     doLast {
         Wrapper wrapper = tasks.wrapper as Wrapper
         Map<String, Object> json = [
