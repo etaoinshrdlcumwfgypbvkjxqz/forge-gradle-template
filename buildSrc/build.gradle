@@ -42,7 +42,10 @@ ext {
 
 static long download(String url, File destination) {
     destination.parentFile.mkdirs()
-    try (FileOutputStream fos = new FileOutputStream(destination)) { return fos.channel.transferFrom(Channels.newChannel(new URL(url).openStream()), 0, Long.MAX_VALUE) }
+    FileOutputStream fos = new FileOutputStream(destination)
+    long ret = 0
+    try { ret = fos.channel.transferFrom(Channels.newChannel(new URL(url).openStream()), 0, Long.MAX_VALUE) } finally { fos.close() }
+    return ret
 }
 void checkMavenMetadata(String metadataUrl, File metadataFile, String properAlgorithmName, String algorithmName) {
     File file = file "$metadataFile.absolutePath.$algorithmName"
@@ -66,7 +69,8 @@ void updateGradleWrapperDistributionUrl(String newDistributionUrl) {
     Wrapper wrapper = tasks.wrapper as Wrapper
     Properties properties = new Properties()
     File propertiesFile = file wrapper.propertiesFile.absolutePath.replace("buildSrc", "")
-    try (FileInputStream fis = new FileInputStream(propertiesFile)) { properties.load fis }
+    FileInputStream fis = new FileInputStream(propertiesFile)
+    try { properties.load fis } finally { fis.close() }
     String oldDistributionUrl = properties.distributionUrl
     newDistributionUrl = newDistributionUrl.replace Wrapper.DistributionType.BIN.name().toLowerCase(Locale.ROOT), Wrapper.DistributionType.ALL.name().toLowerCase(Locale.ROOT)
     URL newDistribution = new URL(newDistributionUrl)
@@ -75,7 +79,8 @@ void updateGradleWrapperDistributionUrl(String newDistributionUrl) {
     if (huc.responseCode != HttpURLConnection.HTTP_OK) throw new FileNotFoundException("\'$newDistributionUrl\' returns \'$huc.responseCode\' instead of \'$HttpURLConnection.HTTP_OK\'.")
     if (new URL(oldDistributionUrl) != newDistribution) {
         properties.distributionUrl = newDistributionUrl
-        try (FileOutputStream fos = new FileOutputStream(propertiesFile)) { proeprties.store fos, null }
+        FileOutputStream fos = new FileOutputStream(propertiesFile)
+        try { properties.store fos, null } finally { fos.close() }
         throw new IllegalStateException("Gradle wrapper distribution URL updated from \'$oldDistributionUrl\' to \'$newDistributionUrl\'. Re-run the build with the same command to apply the changes.")
     }
 }
