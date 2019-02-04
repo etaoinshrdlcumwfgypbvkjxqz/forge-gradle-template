@@ -5,10 +5,10 @@
 project.ext.storeProperties = { Properties properties, String propertiesPath, String comment = null ->
     File propertiesFile = file propertiesPath
     if (!propertiesFile.exists()) propertiesFile.createNewFile()
-    properties.store new FileOutputStream(propertiesFile), comment
+    try (FileOutputStream fos = new FileOutputStream(propertiesFile)) { properties.store fos, comment }
 }
 project.ext.loadProperties = { String propertiesPath ->
     Properties properties = new Properties()
-    properties.load(new FileInputStream(propertiesPath))
+    try (FileInputStream fis = new FileInputStream(propertiesPath)) { properties.load fis }
     properties
 }
