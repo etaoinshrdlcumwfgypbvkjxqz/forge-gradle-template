@@ -15,7 +15,7 @@ String rootDir = "$projectDir${File.separator}.."
 apply from: "$rootDir${File.separator}gradle${File.separator}io${File.separator}properties${File.separator}properties.gradle"
 apply from: "$rootDir${File.separator}gradle${File.separator}io${File.separator}properties${File.separator}ext.properties.gradle"
 
-loadExt "$rootDir${File.separator}settings.properties"
+(loadProperties("$rootDir${File.separator}gradle.properties").findAll { key, value -> key.contains "org.gradle.project."}).each { key, value -> project.ext."${key.replace "org.gradle.project.", ""}" = value}
 ext {
     PapplyLastGoodSettings = project.hasProperty("applyLastGoodSettings") && applyLastGoodSettings.toBoolean()
 

@@ -44,7 +44,6 @@ repositories {
     }
 }
 
-loadExt "$rootDir${File.separator}settings.properties"
 loadExt "$rootDir${File.separator}buildSrc${File.separator}ext.properties"
 ext {
     properName = name.capitalize()
@@ -59,21 +58,21 @@ ext {
     majorApi = majorApi.toInteger()
     minor = minor.toInteger()
     patch = patch.toInteger()
-    final_ = final_.toBoolean()
+    this."final" = this."final".toBoolean()
     pre = pre.toBoolean()
     releaseCandidate = releaseCandidate.toInteger()
-    if (final_ && pre) throw new IllegalArgumentException("\'final_\' and \'pre\' are both 'true'!")
-    if ((final_ || pre) && releaseCandidate != 0) throw new IllegalArgumentException("\'${final_ ? "final_" : "pre"}\' is \'true\' while \'releaseCandidate\' is not \'0\' but \'$releaseCandidate\'.")
+    if (this."final" && pre) throw new IllegalArgumentException("\'final\' and \'pre\' are both 'true'!")
+    if ((this."final" || pre) && releaseCandidate != 0) throw new IllegalArgumentException("\'${this."final" ? "final" : "pre"}\' is \'true\' while \'releaseCandidate\' is not \'0\' but \'$releaseCandidate\'.")
 
     authorList = ["William So"]
     credits = "Made by ${authorList.first()}."
     screenshots = []
     requiredMods = []
-    dependencies_ = []
+    dependencies = []
     dependants = []
 }
 
-version = "${minecraftVersion}-${majorMod}.${majorApi}.${minor}.${patch}${final_ ? "-final" : pre ? "-beta" : releaseCandidate != 0 ? "-rc$releaseCandidate" : ""}"
+version = "${minecraftVersion}-${majorMod}.${majorApi}.${minor}.${patch}${project.ext."final" ? "-final" : pre ? "-beta" : releaseCandidate != 0 ? "-rc$releaseCandidate" : ""}"
 group = group_ // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = properName
 description = description_
@@ -123,12 +122,16 @@ dependencies {
     'testCompile' is superseded by 'testImplementation'.
     'testRuntime' is superseded by 'testRuntimeOnly'.
      */
-
+    
+    // Main
+    
+    // Test
     // JUnit Jupiter
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion"
     testImplementation "org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion"
 
+    // API
     // @API Guardian
     apiImplementation "org.apiguardian:apiguardian-api:$apiGuardianVersion"
 }
@@ -167,7 +170,7 @@ processResources {
     inputs.property "logoFile", logoFile
     inputs.property "screenshots", processResourcesList(screenshots as List<String>)
     inputs.property "requiredMods", processResourcesList(requiredMods as List<String>)
-    inputs.property "dependencies", processResourcesList(dependencies_ as List<String>)
+    inputs.property "dependencies", processResourcesList(project.ext.dependencies as List<String>)
     inputs.property "dependants", processResourcesList(dependants as List<String>)
 
     // replace stuff in the to-be-processed files, nothing else
@@ -224,7 +227,7 @@ task saveCurrentGoodSettings(group: "build", description: "Saves current good se
                         mappings: minecraftMappings
                 ]
         ]
-        
+
         configurations.each { configuration ->
             if (configuration.canBeResolved) configuration.resolvedConfiguration.firstLevelModuleDependencies.each { dependency -> json.dependencies.add([configuration: configuration.name, group: dependency.moduleGroup, name: dependency.moduleName, version: dependency.moduleVersion]) }
             else configuration.dependencies.each { dependency -> json.dependencies.add([configuration: configuration.name, group: dependency.group, name: dependency.name, version: dependency.version]) }
