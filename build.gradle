@@ -46,7 +46,7 @@ repositories {
 
 loadExt "$rootDir${File.separator}buildSrc${File.separator}ext.properties"
 ext {
-    buildType = project.hasProperty("buildType") ? buildType : "DEBUG"
+    buildType = project.hasProperty("buildType") ? buildType : System.getenv("BUILD_TYPE") != null ? System.getenv("BUILD_TYPE") : "DEBUG"
 
     properName = name.capitalize()
 

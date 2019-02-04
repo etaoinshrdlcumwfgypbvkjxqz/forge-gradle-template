@@ -17,7 +17,7 @@ apply from: "$rootDir${File.separator}gradle${File.separator}io${File.separator}
 
 (loadProperties("$rootDir${File.separator}gradle.properties").findAll { key, value -> key.contains "org.gradle.project."}).each { key, value -> project.ext."${key.replace "org.gradle.project.", ""}" = value}
 ext {
-    applyLastGoodSettings = project.hasProperty("applyLastGoodSettings") && applyLastGoodSettings.toBoolean()
+    applyLastGoodSettings = project.hasProperty("applyLastGoodSettings") ? applyLastGoodSettings.toBoolean() : System.getenv("APPLY_LAST_GOOD_SETTINGS") != null ? System.getenv("APPLY_LAST_GOOD_SETTINGS") : false
 
     lastGoodSettingsFile = "$rootDir${File.separator}gradle${File.separator}last-good-settings.json"
     dependenciesDirectory = "$buildDir${File.separator}dependencies"

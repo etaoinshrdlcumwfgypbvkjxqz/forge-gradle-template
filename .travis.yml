@@ -19,10 +19,10 @@ os: linux
 matrix:
   fast_finish: true
   include:
-    - env: PbuildType=DEBUG
-    - env: PbuildType=RELEASE
-    - env: PbuildType=DEBUG PapplyLastGoodSettings=true
-    - env: PbuildType=RELEASE PapplyLastGoodSettings=true
+    - env: BUILD_TYPE=DEBUG
+    - env: BUILD_TYPE=RELEASE
+    - env: BUILD_TYPE=DEBUG APPLY_LAST_GOOD_SETTINGS=true
+    - env: BUILD_TYPE=RELEASE APPLY_LAST_GOOD_SETTINGS=true
 
 before_install:
   - chmod +x ./gradlew
