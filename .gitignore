@@ -189,7 +189,10 @@ gradle-app.setting
 ####################
 # Custom
 ####################
-# Custom definitions.
+# Custom definitions
+
+# Minecraft run directory
+/run/
 
 # Custom files
 ext.properties
