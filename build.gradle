@@ -26,6 +26,8 @@ plugins {
 }
 apply plugin: "net.minecraftforge.gradle.forge"
 
+apply from: "$rootDir${File.separator}gradle${File.separator}utilities.gradle"
+apply from: "$rootDir${File.separator}gradle${File.separator}variables.gradle"
 apply from: "$rootDir${File.separator}gradle${File.separator}io${File.separator}properties${File.separator}properties.gradle"
 apply from: "$rootDir${File.separator}gradle${File.separator}io${File.separator}properties${File.separator}ext.properties.gradle"
 
@@ -46,8 +48,6 @@ repositories {
 
 loadExt "$rootDir${File.separator}buildSrc${File.separator}ext.properties"
 ext {
-    buildType = project.hasProperty("buildType") ? buildType : System.getenv("BUILD_TYPE") != null ? System.getenv("BUILD_TYPE") : "DEBUG"
-
     properName = name.capitalize()
 
     minecraftVersion = (minecraftForgeVersion as String).split("-").first()
@@ -218,10 +218,13 @@ test {
     }
 }
 
-task saveCurrentGoodSettings(group: "build", description: "Saves current good settings to \'$lastGoodSettingsFile\'.") {
-    outputs.file lastGoodSettingsFile
+task saveCurrentGoodSettings(group: "build", description: "Saves current good settings to \'$lastGoodSettingsPath\'.") {
+    outputs.file lastGoodSettingsPath
     
     doLast {
+        File file = file lastGoodSettingsPath
+        createNewFile file
+        
         Wrapper wrapper = tasks.wrapper as Wrapper
         Map<String, Object> json = [
                 gradle: [ distributionUrl: wrapper.distributionUrl.replace(wrapper.distributionType.name().toLowerCase(Locale.ROOT), Wrapper.DistributionType.ALL.name().toLowerCase(Locale.ROOT)) ],
@@ -231,21 +234,14 @@ task saveCurrentGoodSettings(group: "build", description: "Saves current good se
                         mappings: minecraftMappings
                 ]
         ]
-
         configurations.each { configuration ->
             if (configuration.canBeResolved) configuration.resolvedConfiguration.firstLevelModuleDependencies.each { dependency -> json.dependencies.add([configuration: configuration.name, group: dependency.moduleGroup, name: dependency.moduleName, version: dependency.moduleVersion]) }
             else configuration.dependencies.each { dependency -> json.dependencies.add([configuration: configuration.name, group: dependency.group, name: dependency.name, version: dependency.version]) }
         }
         String jsonText = new JsonBuilder(json).toPrettyString()
         
-        File file = file lastGoodSettingsFile
-        if (!file.exists()) {
-            file.parentFile.mkdirs()
-            file.createNewFile()
-        }
-
         file.write jsonText
-        logger.info "'$lastGoodSettingsFile':"
+        logger.info "\'$lastGoodSettingsPath\':"
         logger.info jsonText
     }
 }

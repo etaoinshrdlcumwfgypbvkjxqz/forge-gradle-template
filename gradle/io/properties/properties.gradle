@@ -2,9 +2,11 @@
 // Properties (.properties)
 //////////////////////////////////////////////////
 
+if (!project.ext.has("createNewFile")) throw new IllegalStateException("Apply 'utilities.gradle' before applying 'properties.gradle'.")
+
 project.ext.storeProperties = { Properties properties, String propertiesPath, String comment = null ->
     File propertiesFile = file propertiesPath
-    if (!propertiesFile.exists()) propertiesFile.createNewFile()
+    createNewFile propertiesFile
     FileOutputStream fos = new FileOutputStream(propertiesFile)
     try { properties.store fos, comment } finally { fos.close() }
 }

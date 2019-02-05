@@ -1,0 +1,17 @@
+//////////////////////////////////////////////////
+// Variables
+//////////////////////////////////////////////////
+
+if (!project.ext.has("parseArgument")) throw new IllegalStateException("Apply 'utilities.gradle' before applying 'variables.gradle'.")
+String rootDir = name == "buildSrc" ? "$rootDir${File.separator}.." : rootDir
+
+project.ext {
+    // Arguments
+    buildType = parseArgument "buildType", "BUILD_TYPE", "DEBUG"
+    applyLastGoodSettings = parseArgument("applyLastGoodSettings", "APPLY_LAST_GOOD_SETTINGS", false).toBoolean()
+    errorOnDigestMismatch = parseArgument("errorOnDigestMismatch", "ERROR_ON_DIGEST_MISMATCH", false).toBoolean()
+
+    // Variables
+    lastGoodSettingsPath = "$rootDir${File.separator}gradle${File.separator}last-good-settings.json"
+    repositoryDirectory = "$buildDir${File.separator}repo"
+}

@@ -1,0 +1,23 @@
+//////////////////////////////////////////////////
+// Utilities
+//////////////////////////////////////////////////
+
+import java.nio.channels.Channels
+
+// Arguments
+project.ext.parseArgument = { String key, String envKey, Object defaultValue = null ->
+    project.hasProperty(key) ? project."$key" : System.getenv(envKey) != null ? System.getenv(envKey) : defaultValue
+}
+
+// I/O
+project.ext.createNewFile = { File file ->
+    file.parentFile.mkdirs()
+    file.createNewFile()
+}
+project.ext.download = { String url, File destination ->
+    createNewFile destination
+    FileOutputStream fos = new FileOutputStream(destination)
+    long ret = 0
+    try { ret = fos.channel.transferFrom(Channels.newChannel(new URL(url).openStream()), 0, Long.MAX_VALUE) } finally { fos.close() }
+    ret
+}
