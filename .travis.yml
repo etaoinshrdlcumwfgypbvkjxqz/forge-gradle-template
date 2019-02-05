@@ -17,8 +17,8 @@ addons:
 os: linux
 env:
   matrix:
-    - env: BUILD_TYPE=DEBUG
-    - env: BUILD_TYPE=RELEASE
+    - BUILD_TYPE=DEBUG
+    - BUILD_TYPE=RELEASE
 
 matrix:
   fast_finish: true
