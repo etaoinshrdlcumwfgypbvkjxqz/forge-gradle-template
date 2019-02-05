@@ -15,6 +15,7 @@ addons:
       - oracle-java8-installer
 
 os: linux
+env:
 
 matrix:
   fast_finish: true
@@ -23,6 +24,9 @@ matrix:
     - env: BUILD_TYPE=RELEASE
     - env: BUILD_TYPE=DEBUG APPLY_LAST_GOOD_SETTINGS=true
     - env: BUILD_TYPE=RELEASE APPLY_LAST_GOOD_SETTINGS=true
+  allow_failures:
+    - env: BUILD_TYPE=DEBUG
+    - env: BUILD_TYPE=RELEASE
 
 before_install:
   - chmod +x ./gradlew
