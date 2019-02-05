@@ -19,12 +19,11 @@ env:
   matrix:
     - BUILD_TYPE=DEBUG
     - BUILD_TYPE=RELEASE
+    - BUILD_TYPE=DEBUG APPLY_LAST_GOOD_SETTINGS=true
+    - BUILD_TYPE=RELEASE APPLY_LAST_GOOD_SETTINGS=true
 
 matrix:
   fast_finish: true
-  include:
-    - env:
-    - env: APPLY_LAST_GOOD_SETTINGS=true
   allow_failures:
     - env: BUILD_TYPE=DEBUG
     - env: BUILD_TYPE=RELEASE
