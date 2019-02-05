@@ -81,17 +81,17 @@ void updateGradleWrapperDistributionUrl(String newDistributionUrl) {
 }
 Object parseLastGoodSettings(boolean print) {
     File jsonFile = file lastGoodSettingsPath
-    if (!jsonFile.exists()) throw new FileNotFoundException("'$lastGoodSettingsFile' not found. Obtain '$lastGoodSettingsFile' from the repository.")
+    if (!jsonFile.exists()) throw new FileNotFoundException("'$lastGoodSettingsPath' not found. Obtain '$lastGoodSettingsPath' from the repository.")
     String jsonText = jsonFile.text
     if (print) {
-        logger.info "\'$lastGoodSettingsFile\':"
+        logger.info "\'$lastGoodSettingsPath\':"
         logger.info jsonText
     }
     return new JsonSlurper().parseText(jsonText)
 }
 
 if (applyLastGoodSettings) {
-    logger.lifecycle "Applying last good settings from \'$lastGoodSettingsFile\'..."
+    logger.lifecycle "Applying last good settings from \'$lastGoodSettingsPath\'..."
     def json = parseLastGoodSettings true
 
     updateGradleWrapperDistributionUrl project.ext.gradleDistributionUrl = json.gradle.distributionUrl
