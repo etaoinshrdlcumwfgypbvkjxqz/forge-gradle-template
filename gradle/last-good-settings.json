@@ -24,7 +24,7 @@
         {
             "configuration": "forgeGradleMc",
             "group": "net.minecraftforge",
-            "name": "forgeSrc",
+            "name": "forgeBin",
             "version": "1.12.2-14.23.5.2810"
         },
         {
@@ -409,7 +409,7 @@
             "configuration": "forgeGradleMcpMappings",
             "group": "de.oceanlabs.mcp",
             "name": "mcp_snapshot",
-            "version": "20190203-1.13.1"
+            "version": "20190205-1.13.1"
         },
         {
             "configuration": "forgeGradleUserDevPackage",
@@ -468,6 +468,6 @@
     ],
     "minecraft": {
         "version": "1.12.2-14.23.5.2810",
-        "mappings": "snapshot_20190203"
+        "mappings": "snapshot_20190205"
     }
 }
