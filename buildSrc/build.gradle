@@ -12,7 +12,7 @@ import java.text.SimpleDateFormat
 String rootDir = "$projectDir${File.separator}.."
 
 apply from: "$rootDir${File.separator}gradle${File.separator}utilities.gradle"
-apply from: "$rootDir${File.separator}gradle${File.separator}variables.gradle"
+apply from: "$rootDir${File.separator}gradle${File.separator}global.gradle"
 apply from: "$rootDir${File.separator}gradle${File.separator}io${File.separator}properties${File.separator}properties.gradle"
 apply from: "$rootDir${File.separator}gradle${File.separator}io${File.separator}properties${File.separator}ext.properties.gradle"
 
@@ -35,12 +35,17 @@ ext {
 boolean checkMavenMetadata(String metadataUrl, File metadataFile, String properAlgorithmName, String algorithmName) {
     File file = file "$metadataFile.absolutePath.$algorithmName"
     String url = "$metadataUrl.$algorithmName"
-    download url, file
+    try { download url, file } catch (FileNotFoundException ex) {
+        logger.log LogLevel.WARN, "$properAlgorithmName file \'$url\' for \'$metadataUrl\' not found."
+        if (strictDigestCheck) throw ex
+        else ex.printStackTrace()
+        return true
+    }
     String digest = MessageDigest.getInstance(properAlgorithmName).digest(metadataFile.bytes).encodeHex().toString()
     String expected = file.text.trim()
     if (expected.equalsIgnoreCase(digest)) return true
     else {
-        if (errorOnDigestMismatch) throw new DigestException("\'$metadataUrl\' $properAlgorithmName is '$digest', which is different from $properAlgorithmName '$expected' from '$url'.")
+        if (strictDigestCheck) throw new DigestException("\'$metadataUrl\' $properAlgorithmName is '$digest', which is different from $properAlgorithmName '$expected' from '$url'.")
         else logger.log LogLevel.WARN, "\'$metadataUrl\' $properAlgorithmName is '$digest', which is different from $properAlgorithmName '$expected' from '$url'."
         return false
     }
@@ -84,21 +89,13 @@ Object parseLastGoodSettings(boolean print) {
     if (!jsonFile.exists()) throw new FileNotFoundException("'$lastGoodSettingsPath' not found. Obtain '$lastGoodSettingsPath' from the repository.")
     String jsonText = jsonFile.text
     if (print) {
-        logger.info "\'$lastGoodSettingsPath\':"
+        logger.info "\'${convertToCanonicalPath lastGoodSettingsPath}\':"
         logger.info jsonText
     }
     return new JsonSlurper().parseText(jsonText)
 }
 
-if (applyLastGoodSettings) {
-    logger.lifecycle "Applying last good settings from \'$lastGoodSettingsPath\'..."
-    def json = parseLastGoodSettings true
-
-    updateGradleWrapperDistributionUrl project.ext.gradleDistributionUrl = json.gradle.distributionUrl
-    gradle.projectsLoaded { json.dependencies.each { dependency -> dependencies.add dependency.configuration, "$dependency.group:$dependency.name:$dependency.version", { force = true } } }
-    project.ext.minecraftForgeVersion = json.minecraft.version
-    project.ext.minecraftMappings = json.minecraft.mappings
-} else {
+if (update) {
     if (gradleDistributionUrl == "latest") {
         JsonSlurper jsonSlurper = new JsonSlurper()
 
@@ -132,6 +129,14 @@ if (applyLastGoodSettings) {
 
     if (minecraftForgeVersion == "latest") project.ext.minecraftForgeVersion = getLatestVersionMaven minecraftForgeMavenMetadataXmlUrl.toString(), minecraftForgeMavenMetadataXmlPath.toString()
     if (minecraftMappings == "latest") project.ext.minecraftMappings = "snapshot_${new SimpleDateFormat("yyyyMMdd").format(Calendar.instance.time.previous())}"
+} else {
+    logger.lifecycle "Applying last good settings from \'${convertToCanonicalPath lastGoodSettingsPath}\'..."
+    def json = parseLastGoodSettings true
+
+    updateGradleWrapperDistributionUrl project.ext.gradleDistributionUrl = json.gradle.distributionUrl
+    gradle.projectsLoaded { json.dependencies.each { dependency -> dependencies.add dependency.configuration, "$dependency.group:$dependency.name:$dependency.version", { force = true } } }
+    project.ext.minecraftForgeVersion = json.minecraft.version
+    project.ext.minecraftMappings = json.minecraft.mappings
 }
 
 storeExt()

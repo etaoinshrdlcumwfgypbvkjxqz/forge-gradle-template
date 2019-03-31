@@ -29,7 +29,7 @@ plugins {
 apply plugin: "net.minecraftforge.gradle.forge"
 
 apply from: "$rootDir${File.separator}gradle${File.separator}utilities.gradle"
-apply from: "$rootDir${File.separator}gradle${File.separator}variables.gradle"
+apply from: "$rootDir${File.separator}gradle${File.separator}global.gradle"
 apply from: "$rootDir${File.separator}gradle${File.separator}io${File.separator}properties${File.separator}properties.gradle"
 apply from: "$rootDir${File.separator}gradle${File.separator}io${File.separator}properties${File.separator}ext.properties.gradle"
 
@@ -157,7 +157,7 @@ sourceMainJava {
 
 static <E> String processResourcesList(List<E> list) {
     if (list.empty) return ""
-    else list.toListString().replace("[", "\"").replace("]", "\"").replace(", ", "\", \"")
+    else list.toListString().replace("[", "").replace("]", "").replace(", ", "\", \"")
 }
 processResources {
     // this will ensure that this task is redone when the variables change.
@@ -243,7 +243,7 @@ task saveCurrentGoodSettings(group: "build", description: "Saves current good se
         String jsonText = new JsonBuilder(json).toPrettyString()
 
         file.write jsonText
-        logger.info "\'$lastGoodSettingsPath\':"
+        logger.info "\'${convertToCanonicalPath lastGoodSettingsPath}\':"
         logger.info jsonText
     }
 }

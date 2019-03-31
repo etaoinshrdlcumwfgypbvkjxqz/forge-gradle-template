@@ -8,14 +8,14 @@
     "url": "${url}",
     "updateUrl": "${updateUrl}",
     "updateJSON": "${updateJSON}",
-    "authorList": [${authorList}],
+    "authorList": ["${authorList}"],
     "credits": "${credits}",
     "logoFile": "${logoFile}",
-    "screenshots": [${screenshots}],
+    "screenshots": ["${screenshots}"],
     "parent": "",
     "useDependencyInformation": true,
-    "requiredMods": [${requiredMods}],
-    "dependencies": [${dependencies}],
-    "dependants": [${dependants}]
+    "requiredMods": ["${requiredMods}"],
+    "dependencies": ["${dependencies}"],
+    "dependants": ["${dependants}"]
   }
 ]

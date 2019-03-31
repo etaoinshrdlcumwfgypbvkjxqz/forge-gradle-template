@@ -21,3 +21,6 @@ project.ext.download = { String url, File destination ->
     try { ret = fos.channel.transferFrom(Channels.newChannel(new URL(url).openStream()), 0, Long.MAX_VALUE) } finally { fos.close() }
     ret
 }
+project.ext.convertToCanonicalPath = { String path ->
+    project.file(path).canonicalPath
+}

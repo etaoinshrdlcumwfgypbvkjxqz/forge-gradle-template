@@ -18,12 +18,17 @@ import static java.util.Objects.*;
 public class Eventstruck {
     public static final String MOD_ID = "${modId}";
 
-    private static Logger logger;
-    private static File suggestedConfigurationFile;
-    private static Properties versionProperties;
-    private static ModMetadata modMetadata;
+    private static Eventstruck INSTANCE;
 
+    private Logger logger;
+    private File suggestedConfigurationFile;
+    private Properties versionProperties;
+    private ModMetadata modMetadata;
     private static BuildType buildType;
+
+    private Eventstruck() {
+        INSTANCE = this;
+    }
 
     @SubscribeEvent
     public void preInitialize(FMLPreInitializationEvent event) {
@@ -34,31 +39,33 @@ public class Eventstruck {
 
         buildType = BuildType.valueOf(versionProperties.getProperty("buildType"));
     }
-
     @SubscribeEvent
-    public void registerEventRegistry(RegistryEvent.NewRegistry event) {
+    public void createNewRegistry(RegistryEvent.NewRegistry event) {
         new RegistryBuilder<GameEvent>().setName(GameEvent.NAME).setType(GameEvent.class).setIDRange(GameEvent.MIN_ID, GameEvent.MAX_ID).create();
     }
 
-    public static Logger getLogger() {
+    public static Eventstruck getInstance() {
+        requireNonNull(INSTANCE, "Mod instance is requested before instance is created.");
+        return INSTANCE;
+    }
+
+    public Logger getLogger() {
         requireNonNull(logger, "Logger is requested before pre-initialization.");
         return logger;
     }
-    public static File getSuggestedConfigurationFile() {
+    public File getSuggestedConfigurationFile() {
         requireNonNull(suggestedConfigurationFile, "Suggested configuration file is requested before pre-initialization.");
         return suggestedConfigurationFile;
     }
-    public static Properties getVersionProperties() {
+    public Properties getVersionProperties() {
         requireNonNull(versionProperties, "Version properties is requested before pre-initialization.");
         return versionProperties;
     }
-
-    public static ModMetadata getModMetadata() {
+    public ModMetadata getModMetadata() {
         requireNonNull(modMetadata, "Mod metadata is requested before pre-initialization.");
         return modMetadata;
     }
-
-    public static BuildType getBuildType() {
+    public BuildType getBuildType() {
         requireNonNull(buildType, "Build type is requested before pre-initialization.");
         return buildType;
     }

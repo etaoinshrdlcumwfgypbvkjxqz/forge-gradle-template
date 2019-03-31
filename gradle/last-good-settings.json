@@ -1,6 +1,6 @@
 {
     "gradle": {
-        "distributionUrl": "https://services.gradle.org/distributions-snapshots/gradle-4.10.2-20180920083835+0000-all.zip"
+        "distributionUrl": "https://services.gradle.org/distributions/gradle-4.10.3-all.zip"
     },
     "dependencies": [
         {
@@ -24,7 +24,7 @@
         {
             "configuration": "forgeGradleMc",
             "group": "net.minecraftforge",
-            "name": "forgeBin",
+            "name": "forgeSrc",
             "version": "1.12.2-14.23.5.2810"
         },
         {
@@ -421,13 +421,13 @@
             "configuration": "testCompileClasspath",
             "group": "org.junit.jupiter",
             "name": "junit-jupiter-api",
-            "version": "5.4.0-RC2"
+            "version": "5.5.0-SNAPSHOT"
         },
         {
             "configuration": "testCompileClasspath",
             "group": "org.junit.jupiter",
             "name": "junit-jupiter-params",
-            "version": "5.4.0-RC2"
+            "version": "5.5.0-SNAPSHOT"
         },
         {
             "configuration": "testImplementation",
@@ -445,19 +445,19 @@
             "configuration": "testRuntimeClasspath",
             "group": "org.junit.jupiter",
             "name": "junit-jupiter-api",
-            "version": "5.4.0-RC2"
+            "version": "5.5.0-SNAPSHOT"
         },
         {
             "configuration": "testRuntimeClasspath",
             "group": "org.junit.jupiter",
             "name": "junit-jupiter-params",
-            "version": "5.4.0-RC2"
+            "version": "5.5.0-SNAPSHOT"
         },
         {
             "configuration": "testRuntimeClasspath",
             "group": "org.junit.jupiter",
             "name": "junit-jupiter-engine",
-            "version": "5.4.0-RC2"
+            "version": "5.5.0-SNAPSHOT"
         },
         {
             "configuration": "testRuntimeOnly",
