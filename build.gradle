@@ -251,13 +251,15 @@ tasks.build.finalizedBy "saveCurrentGoodSettings"
 task cleanCacheAutomatically(type: Delete, group: "build", description: "Clean old items from cache to reduce space usage.", dependsOn: "saveCurrentGoodSettings") {
     // Gradle
     gradle.gradleUserHomeDir.eachDir { directory -> directory.eachDirMatch(~/[0-9]+[.-][0-9.+-]+"/) { subdirectory -> if (subdirectory.name != gradle.gradleVersion) delete subdirectory } }
-    
+
     // Minecraft
     String minecraftCachePath = "$gradle.gradleUserHomeDir.absolutePath${File.separator}caches${File.separator}minecraft"
     // Minecraft Coder Pack
-    file("$minecraftCachePath${File.separator}de${File.separator}oceanlabs${File.separator}mcp${File.separator}mcp_snapshot").eachDir { directory -> if ("snapshot_$directory.name".toString() != minecraftMappings) delete directory }
+    File mcpDir = file("$minecraftCachePath${File.separator}de${File.separator}oceanlabs${File.separator}mcp${File.separator}mcp_snapshot")
+    if (mcpDir.exists()) mcpDir.eachDir { directory -> if ("snapshot_$directory.name".toString() != minecraftMappings) delete directory }
     // Minecraft Forge
-    file("$minecraftCachePath${File.separator}net${File.separator}minecraftforge${File.separator}forge").eachDir { directory -> if (directory.name != minecraftForgeVersion) delete directory }
+    File minecraftForgeDir = file("$minecraftCachePath${File.separator}net${File.separator}minecraftforge${File.separator}forge")
+    if (minecraftForgeDir.exists()) minecraftForgeDir.eachDir { directory -> if (directory.name != minecraftForgeVersion) delete directory }
 }
 tasks.saveCurrentGoodSettings.finalizedBy "cleanCacheAutomatically"
 
