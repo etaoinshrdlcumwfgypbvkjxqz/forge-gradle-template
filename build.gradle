@@ -150,7 +150,7 @@ static Map<String, Object> processReplaceKeys(Map<String, Object> map) { return 
 sourceMainJava {
     include "${properName}.java"
 
-    replace processReplaceKeys(["modId": project.name,
+    replace processReplaceKeys(["modid": project.name,
                                 "minecraftVersionRange": minecraftVersionRange,
                                 "certificateFingerprint": certificateFingerprint])
 }
@@ -183,7 +183,7 @@ processResources {
         include "mcmod.info", "pack.mcmeta", "version.properties"
 
         // replace variables
-        expand "modId": inputs.properties.modId,
+        expand "modid": inputs.properties.modId,
                 "name": inputs.properties.name,
                 "description": inputs.properties.description,
                 "version": inputs.properties.version,
@@ -195,6 +195,7 @@ processResources {
                 "credits": inputs.properties.credits,
                 "logoFile": inputs.properties.logoFile,
                 "screenshots": inputs.properties.screenshots,
+                "requiredModsKey": "requiredMods",
                 "requiredMods": inputs.properties.requiredMods,
                 "dependencies": inputs.properties.dependencies,
                 "dependants": inputs.properties.dependants,
@@ -251,13 +252,15 @@ tasks.build.finalizedBy "saveCurrentGoodSettings"
 task cleanCacheAutomatically(type: Delete, group: "build", description: "Clean old items from cache to reduce space usage.", dependsOn: "saveCurrentGoodSettings") {
     // Gradle
     gradle.gradleUserHomeDir.eachDir { directory -> directory.eachDirMatch(~/[0-9]+[.-][0-9.+-]+"/) { subdirectory -> if (subdirectory.name != gradle.gradleVersion) delete subdirectory } }
-    
+
     // Minecraft
     String minecraftCachePath = "$gradle.gradleUserHomeDir.absolutePath${File.separator}caches${File.separator}minecraft"
     // Minecraft Coder Pack
-    file("$minecraftCachePath${File.separator}de${File.separator}oceanlabs${File.separator}mcp${File.separator}mcp_snapshot").eachDir { directory -> if ("snapshot_$directory.name".toString() != minecraftMappings) delete directory }
+    File mcpDir = file("$minecraftCachePath${File.separator}de${File.separator}oceanlabs${File.separator}mcp${File.separator}mcp_snapshot")
+    if (mcpDir.exists()) mcpDir.eachDir { directory -> if ("snapshot_$directory.name".toString() != minecraftMappings) delete directory }
     // Minecraft Forge
-    file("$minecraftCachePath${File.separator}net${File.separator}minecraftforge${File.separator}forge").eachDir { directory -> if (directory.name != minecraftForgeVersion) delete directory }
+    File minecraftForgeDir = file("$minecraftCachePath${File.separator}net${File.separator}minecraftforge${File.separator}forge")
+    if (minecraftForgeDir.exists()) minecraftForgeDir.eachDir { directory -> if (directory.name != minecraftForgeVersion) delete directory }
 }
 tasks.saveCurrentGoodSettings.finalizedBy "cleanCacheAutomatically"
 

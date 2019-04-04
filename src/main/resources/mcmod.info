@@ -1,6 +1,6 @@
 [
   {
-    "modid": "${modId}",
+    "modid": "${modid}",
     "name": "${name}",
     "description": "${description}",
     "version": "${version}",
@@ -14,7 +14,7 @@
     "screenshots": ["${screenshots}"],
     "parent": "",
     "useDependencyInformation": true,
-    "requiredMods": ["${requiredMods}"],
+    "${requiredModsKey}": ["${requiredMods}"],
     "dependencies": ["${dependencies}"],
     "dependants": ["${dependants}"]
   }

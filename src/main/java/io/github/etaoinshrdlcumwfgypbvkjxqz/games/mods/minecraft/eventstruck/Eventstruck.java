@@ -1,6 +1,7 @@
 package io.github.etaoinshrdlcumwfgypbvkjxqz.games.mods.minecraft.eventstruck;
 
 import io.github.etaoinshrdlcumwfgypbvkjxqz.games.mods.minecraft.eventstruck.gameevent.GameEvent;
+import io.github.etaoinshrdlcumwfgypbvkjxqz.games.mods.minecraft.eventstruck.utilities.ThrowingUtilities;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.ModMetadata;
@@ -12,11 +13,12 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.util.Properties;
 
+import static io.github.etaoinshrdlcumwfgypbvkjxqz.games.mods.minecraft.eventstruck.utilities.ThrowingUtilities.*;
 import static java.util.Objects.*;
 
 @Mod(modid = Eventstruck.MOD_ID, useMetadata = true, canBeDeactivated = true, acceptedMinecraftVersions = "${minecraftVersionRange}", acceptableRemoteVersions = "${minecraftVersionRange}", acceptableSaveVersions = "${minecraftVersionRange}", certificateFingerprint = "${certificateFingerprint}")
 public class Eventstruck {
-    public static final String MOD_ID = "${modId}";
+    public static final String MOD_ID = "${modid}";
 
     private static Eventstruck INSTANCE;
 
@@ -26,7 +28,8 @@ public class Eventstruck {
     private ModMetadata modMetadata;
     private static BuildType buildType;
 
-    private Eventstruck() {
+    public Eventstruck() {
+        if (INSTANCE != null) throw throwIllegalConstructorUse();
         INSTANCE = this;
     }
 
