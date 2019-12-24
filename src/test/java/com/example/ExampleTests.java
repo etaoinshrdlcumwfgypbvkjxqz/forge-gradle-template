@@ -20,7 +20,7 @@ public class ExampleTests {
 
     private static URL assertResourceExists(String name) {
         URL resource = ExampleTests.class.getResource(name);
-        assertNotNull(resource, "Resource \'" + name + "\' should exists");
+        assertNotNull(resource, "Resource '" + name + "' should exists");
         return resource;
     }
 }
