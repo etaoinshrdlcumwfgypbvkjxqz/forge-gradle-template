@@ -73,12 +73,11 @@ ext {
 
 version = "${minecraftVersion}-${majorMod}.${majorApi}.${minor}.${patch}${project.ext."final" ? "-final" : pre ? "-beta" : releaseCandidate != 0 ? "-rc$releaseCandidate" : ""}"
 group = group_ // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = properName
+archivesBaseName = project.name
 description = description_
 
 // Need this here so eclipse task generates correctly.
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = targetCompatibility = 1.8
 
 minecraft {
     version = minecraftForgeVersion
@@ -145,10 +144,10 @@ sourceSets {
 
 static Map<String, Object> processReplaceKeys(Map<String, Object> m) { return m.collectEntries { k, v -> ["\${$k}".toString(), v]} as Map<String, Object> }
 sourceMainJava {
-    include "${properName}.java"
+    include "${project.name}.java"
 
     //noinspection GroovyAssignabilityCheck
-    replace processReplaceKeys(["modid"                 : project.name,
+    replace processReplaceKeys(["modid"                 : modId,
                                 "minecraftVersionRange" : minecraftVersionRange,
                                 "certificateFingerprint": certificateFingerprint])
 }
@@ -162,8 +161,8 @@ processResources {
 }
 task processResourcesConfig(type: Copy, group: "config", description: "Process resources at configuration time.") {
     // this will ensure that this task is redone when the variables change.
-    inputs.property "modId", project.name
-    inputs.property "name", properName
+    inputs.property "modId", modId
+    inputs.property "name", project.name
     inputs.property "description", project.description
     inputs.property "version", version
     inputs.property "minecraftVersion", project.minecraft.version
