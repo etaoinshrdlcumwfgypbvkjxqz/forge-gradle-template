@@ -130,7 +130,7 @@ dependencies {
     'testRuntime' is superseded by 'testRuntimeOnly'.
      */
 }
-stringToStringMap(customDependencies).each { String k, String v -> dependencies.add(k, v) }
+stringToStringMap(customDependencies).each { String k, String v -> dependencies.add(k, new GroovyShell(new Binding(ext.properties)).evaluate("\"\"\"$v\"\"\"")) }
 
 sourceSets {
     main {
@@ -235,7 +235,7 @@ artifacts {
     archives tasks.javadocJar
 }
 
-task saveCurrentGoodSettings(group: "build", description: "Saves current good settings to \'$lastGoodSettingsPath\'.", dependsOn: "build") {
+task saveCurrentGoodSettings(group: "build", description: "Saves current good settings to \'$lastGoodSettingsPath\'.") {
     outputs.file lastGoodSettingsPath
 
     doLast {
