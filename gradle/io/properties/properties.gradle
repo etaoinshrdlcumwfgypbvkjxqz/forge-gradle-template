@@ -4,15 +4,15 @@
 
 if (!project.ext.has("createNewFile")) throw new IllegalStateException("Apply 'utilities.gradle' before applying 'properties.gradle'.")
 
-project.ext.storeProperties = { Properties properties, String propertiesPath, String comment = null ->
-    File propertiesFile = file propertiesPath
-    createNewFile propertiesFile
-    FileOutputStream fos = new FileOutputStream(propertiesFile)
-    try { properties.store fos, comment } finally { fos.close() }
+project.ext.storeProperties = { Properties prop, String path, String comment = null ->
+    File f = file path
+    createNewFile f
+    FileOutputStream fos = new FileOutputStream(f)
+    try { prop.store fos, comment } finally { fos.close() }
 }
-project.ext.loadProperties = { String propertiesPath ->
-    Properties properties = new Properties()
-    FileInputStream fis = new FileInputStream(propertiesPath)
-    try { properties.load fis } finally { fis.close() }
-    properties
+project.ext.loadProperties = { String path ->
+    Properties prop = new Properties()
+    FileInputStream fis = new FileInputStream(path)
+    try { prop.load fis } finally { fis.close() }
+    prop
 }

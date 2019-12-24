@@ -1,6 +1,7 @@
 ##################################################
 # Git Attributes
 ##################################################
+# TODO: (Optional) Configure .gitattributes.
 # How git behaves.
 
 # Set default behavior to automatically normalize line endings.

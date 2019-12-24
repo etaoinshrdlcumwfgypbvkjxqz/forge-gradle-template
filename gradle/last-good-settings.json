@@ -7,7 +7,7 @@
             "configuration": "apiCompileClasspath",
             "group": "org.apiguardian",
             "name": "apiguardian-api",
-            "version": "1.1.0-SNAPSHOT"
+            "version": "1.2.0-SNAPSHOT"
         },
         {
             "configuration": "apiImplementation",
@@ -19,7 +19,7 @@
             "configuration": "apiRuntimeClasspath",
             "group": "org.apiguardian",
             "name": "apiguardian-api",
-            "version": "1.1.0-SNAPSHOT"
+            "version": "1.2.0-SNAPSHOT"
         },
         {
             "configuration": "forgeGradleMc",
@@ -421,13 +421,13 @@
             "configuration": "testCompileClasspath",
             "group": "org.junit.jupiter",
             "name": "junit-jupiter-api",
-            "version": "5.5.0-SNAPSHOT"
+            "version": "5.6.0-SNAPSHOT"
         },
         {
             "configuration": "testCompileClasspath",
             "group": "org.junit.jupiter",
             "name": "junit-jupiter-params",
-            "version": "5.5.0-SNAPSHOT"
+            "version": "5.6.0-SNAPSHOT"
         },
         {
             "configuration": "testImplementation",
@@ -445,19 +445,19 @@
             "configuration": "testRuntimeClasspath",
             "group": "org.junit.jupiter",
             "name": "junit-jupiter-api",
-            "version": "5.5.0-SNAPSHOT"
+            "version": "5.6.0-SNAPSHOT"
         },
         {
             "configuration": "testRuntimeClasspath",
             "group": "org.junit.jupiter",
             "name": "junit-jupiter-params",
-            "version": "5.5.0-SNAPSHOT"
+            "version": "5.6.0-SNAPSHOT"
         },
         {
             "configuration": "testRuntimeClasspath",
             "group": "org.junit.jupiter",
             "name": "junit-jupiter-engine",
-            "version": "5.5.0-SNAPSHOT"
+            "version": "5.6.0-SNAPSHOT"
         },
         {
             "configuration": "testRuntimeOnly",

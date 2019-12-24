@@ -2,4 +2,5 @@
 // Gradle Settings
 //////////////////////////////////////////////////
 
-rootProject.name = "eventstruck"
+// TODO: Set project mod ID.
+rootProject.name = "example"
