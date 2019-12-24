@@ -125,9 +125,8 @@ dependencies {
 
     /*
     'compile' is superseded by 'implementation'.
+    'provided' is superseded by 'compileOnly'.
     'runtime' is superseded by 'runtimeOnly'.
-    'testCompile' is superseded by 'testImplementation'.
-    'testRuntime' is superseded by 'testRuntimeOnly'.
      */
 }
 stringToStringMap(customDependencies).each { String k, String v -> dependencies.add(k, new GroovyShell(new Binding(ext.properties)).evaluate("\"\"\"$v\"\"\"")) }
