@@ -2,5 +2,5 @@
 // Gradle Settings
 //////////////////////////////////////////////////
 
-// TODO: Set project proper name.
+// TODO: Set project name.
 rootProject.name = "Example"

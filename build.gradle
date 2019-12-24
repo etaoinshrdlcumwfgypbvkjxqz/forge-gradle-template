@@ -162,7 +162,7 @@ processResources {
 task processResourcesConfig(type: Copy, group: "config", description: "Process resources at configuration time.") {
     // this will ensure that this task is redone when the variables change.
     inputs.property "modId", modId
-    inputs.property "name", project.name
+    inputs.property "name", name_
     inputs.property "description", project.description
     inputs.property "version", version
     inputs.property "minecraftVersion", project.minecraft.version
