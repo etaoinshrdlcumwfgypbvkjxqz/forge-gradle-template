@@ -14,8 +14,8 @@ env:
   matrix:
     - BUILD_TYPE=DEBUG
     - BUILD_TYPE=RELEASE
-    - BUILD_TYPE=DEBUG UPDATE=true
-    - BUILD_TYPE=RELEASE UPDATE=true
+    - BUILD_TYPE=DEBUG UPDATE=false
+    - BUILD_TYPE=RELEASE UPDATE=false
 
 matrix:
   fast_finish: true
