@@ -55,6 +55,18 @@ ext {
     requiredMods = stringToStringList requiredMods_
     dependencies = stringToStringList dependencies_
     dependants = stringToStringList dependencies_
+
+    combinedDependencies = ""
+    requiredMods.each { m -> combinedDependencies += "required:$m;"}
+    ext.dependencies.each { m ->
+        if (combinedDependencies.contains(m)) combinedDependencies.replace "required:$m", "required-after:$m"
+        else combinedDependencies += "after:$m;"
+    }
+    dependants.each { m ->
+        if (combinedDependencies.contains(m)) combinedDependencies.replace "required:$m", "required-before:$m"
+        else combinedDependencies += "before:$m;"
+    }
+    combinedDependencies += combinedDependenciesAdditions
 }
 
 repositories {
@@ -146,9 +158,15 @@ sourceMainJava {
     include "${project.name}.java"
 
     //noinspection GroovyAssignabilityCheck
-    replace processReplaceKeys(["modid"                 : modId,
-                                "minecraftVersionRange" : minecraftVersionRange,
-                                "certificateFingerprint": certificateFingerprint])
+    replace processReplaceKeys([
+            "modid": modId,
+            "name": name_,
+            "version": version,
+            "dependencies": combinedDependencies,
+            "minecraftVersionRange": minecraftVersionRange,
+            "certificateFingerprint": certificateFingerprint,
+            "updateJSON": updateJSON
+    ])
 }
 
 static <E> String processResourcesList(List<E> l) { l.empty ? "[]" : l.toListString().replace("[", "[\"").replace("]", "\"]").replace(", ", "\", \"") }

@@ -5,12 +5,15 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 // TODO: Write your mod.
 @SuppressWarnings("unused")
-@Mod(modid = Example.MOD_ID, useMetadata = true, acceptedMinecraftVersions = "${minecraftVersionRange}", certificateFingerprint = "${certificateFingerprint}")
+@Mod(modid = "${modid}",
+        name = "${name}",
+        version = "${version}",
+        dependencies = "${dependencies}",
+        useMetadata = true,
+        acceptedMinecraftVersions = "${minecraftVersionRange}",
+        certificateFingerprint = "${certificateFingerprint}",
+        updateJSON = "${updateJSON}")
 public class Example {
-    public static final String MOD_ID = "${modid}";
-
     @Mod.EventHandler
-    public void preInitialize(FMLPreInitializationEvent event) {
-        System.out.println("Hello, world!");
-    }
+    public void preInitialize(FMLPreInitializationEvent event) { System.out.println("Hello, world!"); }
 }
