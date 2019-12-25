@@ -15,12 +15,7 @@ public class ExampleTests {
     @Test
     @DisplayName("Find Dummy")
     void findDummy() {
-        assertResourceExists("/dummy.txt");
-    }
-
-    private static URL assertResourceExists(String name) {
-        URL resource = ExampleTests.class.getResource(name);
-        assertNotNull(resource, "Resource '" + name + "' should exists");
-        return resource;
+        URL resource = ExampleTests.class.getResource("/dummy.txt");
+        assertNotNull(resource, "Resource '" + "/dummy.txt" + "' should exists");
     }
 }

@@ -4,6 +4,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 // TODO: Write your mod.
+@SuppressWarnings("unused")
 @Mod(modid = Example.MOD_ID, useMetadata = true, acceptedMinecraftVersions = "${minecraftVersionRange}", certificateFingerprint = "${certificateFingerprint}")
 public class Example {
     public static final String MOD_ID = "${modid}";
