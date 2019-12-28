@@ -15,7 +15,7 @@ public class ExampleTests {
     @Test
     @DisplayName("Find Dummy")
     void findDummy() {
-        URL resource = ExampleTests.class.getResource("/dummy.txt");
-        assertNotNull(resource, "Resource '" + "/dummy.txt" + "' should exists");
+        URL resource = getClass().getResource("/dummy.txt");
+        assertNotNull(resource, "Resources not properly copied");
     }
 }
