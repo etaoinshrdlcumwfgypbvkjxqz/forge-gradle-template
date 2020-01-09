@@ -186,15 +186,19 @@ processResources {
         exclude "*.in"
     }
 }
+task copyProcessedResources(type: Copy, description: "Copy processed resources.") {
+    from "$buildDir/resources/main"
+    into "$buildDir/classes/java/main"
+
+    doFirst {
+        delete fileTree(dir: "$buildDir/classes/java/main", exclude: ["*.class"])
+    }
+}
+tasks.processResources.finalizedBy tasks.copyProcessedResources
 task deleteCopiedProcessedResources(type: Delete, description: "Delete copied processed resources.") {
     delete fileTree(dir: "$buildDir/classes/java/main", exclude: ["*.class"])
 }
 tasks.jar.dependsOn tasks.deleteCopiedProcessedResources
-task copyProcessedResources(type: Copy, description: "Copy processed resources.", dependsOn: tasks.deleteCopiedProcessedResources) {
-    from "$buildDir/resources/main"
-    into "$buildDir/classes/java/main"
-}
-tasks.processResources.finalizedBy tasks.copyProcessedResources
 task processResourcesConfig(type: Copy, group: "config", description: "Process resources at configuration time.") {
     // this will ensure that this task is redone when the variables change.
     inputs.property "modId", project.name
