@@ -5,7 +5,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 // TODO: Write your mod.
 @SuppressWarnings("unused")
-@Mod(modid = "${modid}",
+@Mod(modid = "${modId}",
         name = "${name}",
         version = "${version}",
         dependencies = "${dependencies}",
