@@ -246,6 +246,7 @@ task processResourcesConfig(type: Copy, group: "config", description: "Process r
                 "pack_format": inputs.properties.pack_format
     }
 }
+tasks.processResources.dependsOn tasks.processResourcesConfig
 tasks.processResourcesConfig.actions.each { a -> a.execute(tasks.processResourcesConfig) }
 processTestResources {
     from sourceSets.test.resources.srcDirs
