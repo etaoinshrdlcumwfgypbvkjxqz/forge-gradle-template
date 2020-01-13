@@ -57,14 +57,14 @@ ext {
     dependants = stringToStringList dependants_
 
     combinedDependencies = ""
-    requiredMods.each { m -> combinedDependencies += "required:$m;"}
-    ext.dependencies.each { m ->
-        if (combinedDependencies.contains(m)) combinedDependencies.replace "required:$m", "required-after:$m"
-        else combinedDependencies += "after:$m;"
+    requiredMods.each { combinedDependencies += "required:$it;" }
+    ext.dependencies.each {
+        if (combinedDependencies.contains(it)) combinedDependencies.replace "required:$it", "required-after:$it"
+        else combinedDependencies += "after:$it;"
     }
-    dependants.each { m ->
-        if (combinedDependencies.contains(m)) combinedDependencies.replace "required:$m", "required-before:$m"
-        else combinedDependencies += "before:$m;"
+    dependants.each {
+        if (combinedDependencies.contains(m)) combinedDependencies.replace "required:$it", "required-before:$it"
+        else combinedDependencies += "before:$it;"
     }
     combinedDependencies += combinedDependenciesAdditions
 }
@@ -75,8 +75,8 @@ repositories {
     mavenCentral()
     google()
 }
-stringToStringMap(customRepositories).each { String k, List<String> v -> v.each { v2 ->
-    String[] temp = v2.split("(?<!\\\\):", 2).collect { s -> evaluateGStringString s.trim().replace("\\:", ":") }
+stringToStringMap(customRepositories).each { String k, List<String> v -> v.each {
+    String[] temp = it.split("(?<!\\\\):", 2).collect { evaluateGStringString it.trim().replace("\\:", ":") }
     repositories."$k" {
         name = temp.first()
         url = temp.last()
@@ -111,9 +111,9 @@ reobf {
         // extraLines "PK: org/ejml your/new/package/here/ejml" // shading example
     }
 }
-stringToStringMap(customDependencies).each { String k, List<String> v -> v.each { s ->
+stringToStringMap(customDependencies).each { String k, List<String> v -> v.each {
     if (k != "shade") return
-    String p = evaluateGStringString(s).split(":", 2).first().replace ".", "/"
+    String p = evaluateGStringString(it).split(":", 2).first().replace ".", "/"
     reobf.jar.extraLines "PK: $p ${group.replace ".", "/"}/shaded/$p"
 }}
 
@@ -151,12 +151,12 @@ dependencies {
     'runtime' is superseded by 'runtimeOnly'.
      */
 }
-stringToStringMap(customDependencies).each { String k, List<String> v -> v.each { s -> dependencies.add k, evaluateGStringString(s) } }
+stringToStringMap(customDependencies).each { String k, List<String> v -> v.each { dependencies.add k, evaluateGStringString(it) } }
 
 sourceSets {
     main {
         resources {
-            exclude "*.in"
+            exclude "**/*.in"
         }
     }
     test
@@ -165,7 +165,7 @@ sourceSets {
 
 static Map<String, Object> processReplaceKeys(Map<String, Object> m) { return m.collectEntries { k, v -> ["\${$k}".toString(), v]} as Map<String, Object> }
 sourceMainJava {
-    include "${project.name}.java"
+    include ".java"
 
     //noinspection GroovyAssignabilityCheck
     replace processReplaceKeys([
@@ -183,7 +183,7 @@ static <E> String processResourcesList(List<E> l) { l.empty ? "[]" : l.toListStr
 processResources {
     // copy everything else except the processed files
     from(sourceSets.main.resources.srcDirs) {
-        exclude "*.in"
+        exclude "**/*.in"
     }
 }
 task copyProcessedResources(type: Copy, description: "Copy processed resources.") {
@@ -191,12 +191,12 @@ task copyProcessedResources(type: Copy, description: "Copy processed resources."
     into "$buildDir/classes/java/main"
 
     doFirst {
-        delete fileTree(dir: "$buildDir/classes/java/main", exclude: ["*.class"])
+        delete fileTree(dir: "$buildDir/classes/java/main", excludes: ["**/*.class"])
     }
 }
 tasks.processResources.finalizedBy tasks.copyProcessedResources
 task deleteCopiedProcessedResources(type: Delete, description: "Delete copied processed resources.") {
-    delete fileTree(dir: "$buildDir/classes/java/main", exclude: ["*.class"])
+    delete fileTree(dir: "$buildDir/classes/java/main", excludes: ["**/*.class"])
 }
 tasks.jar.dependsOn tasks.deleteCopiedProcessedResources
 task processResourcesConfig(type: Copy, group: "config", description: "Process resources at configuration time.") {
@@ -219,11 +219,11 @@ task processResourcesConfig(type: Copy, group: "config", description: "Process r
     inputs.property "dependants", processResourcesList(dependants as List<String>)
     inputs.property "pack_format", pack_format
 
-    into sourceSets.main.resources.sourceDirectories.find { f -> f.list().find { s -> s.matches ~/.*\.in/ } }
+    into sourceSets.main.resources.sourceDirectories.find { it.list().find { it.matches ~/.*\.in/ } }
 
     // replace stuff in the to-be-processed files, nothing else
     from(sourceSets.main.resources.srcDirs) {
-        include "*.in"
+        include "**/*.in"
         rename ~/(.*)\.in/, "\$1"
 
         // replace variables
@@ -247,7 +247,7 @@ task processResourcesConfig(type: Copy, group: "config", description: "Process r
     }
 }
 tasks.processResources.dependsOn tasks.processResourcesConfig
-tasks.processResourcesConfig.actions.each { a -> a.execute(tasks.processResourcesConfig) }
+tasks.processResourcesConfig.actions.each { it.execute(tasks.processResourcesConfig) }
 processTestResources {
     from sourceSets.test.resources.srcDirs
 }
@@ -263,7 +263,7 @@ test {
 }
 
 jar {
-    configurations.shade.each { d -> from (project.zipTree(d)) { exclude 'META-INF', 'META-INF/**' }}
+    configurations.shade.each { from (project.zipTree(it)) { exclude 'META-INF', 'META-INF/**' }}
 }
 task deobfJar(type: Jar, dependsOn: 'jar') {
     from "build/source/main"
@@ -303,8 +303,8 @@ task saveCurrentGoodSettings(group: "build", description: "Saves current good se
                 ]
         ]
         configurations.each { configuration ->
-            if (configuration.canBeResolved) configuration.resolvedConfiguration.firstLevelModuleDependencies.each { dependency -> json.dependencies.add([configuration: configuration.name, group: dependency.moduleGroup, name: dependency.moduleName, version: dependency.moduleVersion]) }
-            else configuration.dependencies.each { dependency -> json.dependencies.add([configuration: configuration.name, group: dependency.group, name: dependency.name, version: dependency.version]) }
+            if (configuration.canBeResolved) configuration.resolvedConfiguration.firstLevelModuleDependencies.each { json.dependencies.add([configuration: configuration.name, group: it.moduleGroup, name: it.moduleName, version: it.moduleVersion]) }
+            else configuration.dependencies.each { json.dependencies.add([configuration: configuration.name, group: it.group, name: it.name, version: it.version]) }
         }
         String jsonText = new JsonBuilder(json).toPrettyString()
 
@@ -316,16 +316,16 @@ task saveCurrentGoodSettings(group: "build", description: "Saves current good se
 tasks.build.finalizedBy "saveCurrentGoodSettings"
 task cleanCacheAutomatically(type: Delete, group: "build", description: "Clean old items from cache to reduce space usage.", dependsOn: "saveCurrentGoodSettings") {
     // Gradle
-    gradle.gradleUserHomeDir.eachDir { directory -> directory.eachDirMatch(~/[0-9]+[.-][0-9.+-]+"/) { subdirectory -> if (subdirectory.name != gradle.gradleVersion) delete subdirectory } }
+    gradle.gradleUserHomeDir.eachDir { it.eachDirMatch(~/[0-9]+[.-][0-9.+-]+"/) { if (it.name != gradle.gradleVersion) delete it } }
 
     // Minecraft
     String minecraftCachePath = "$gradle.gradleUserHomeDir.absolutePath${File.separator}caches${File.separator}minecraft"
     // Minecraft Coder Pack
     File mcpDir = file("$minecraftCachePath${File.separator}de${File.separator}oceanlabs${File.separator}mcp${File.separator}mcp_snapshot")
-    if (mcpDir.exists()) mcpDir.eachDir { directory -> if ("snapshot_$directory.name".toString() != minecraftMappings) delete directory }
+    if (mcpDir.exists()) mcpDir.eachDir { if ("snapshot_$it.name".toString() != minecraftMappings) delete it }
     // Minecraft Forge
     File minecraftForgeDir = file("$minecraftCachePath${File.separator}net${File.separator}minecraftforge${File.separator}forge")
-    if (minecraftForgeDir.exists()) minecraftForgeDir.eachDir { directory -> if (directory.name != minecraftForgeVersion) delete directory }
+    if (minecraftForgeDir.exists()) minecraftForgeDir.eachDir { if (it.name != minecraftForgeVersion) delete it }
 }
 tasks.saveCurrentGoodSettings.finalizedBy "cleanCacheAutomatically"
 

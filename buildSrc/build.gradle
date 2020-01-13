@@ -17,7 +17,7 @@ apply from: "$rootDir${File.separator}gradle${File.separator}global.gradle"
 apply from: "$rootDir${File.separator}gradle${File.separator}io${File.separator}properties${File.separator}properties.gradle"
 apply from: "$rootDir${File.separator}gradle${File.separator}io${File.separator}properties${File.separator}ext.properties.gradle"
 
-(loadProperties("$rootDir${File.separator}gradle.properties").findAll { key, value -> key.contains "org.gradle.project."}).each { key, value -> project.ext."${key.replace "org.gradle.project.", ""}" = value}
+(loadProperties("$rootDir${File.separator}gradle.properties").findAll { k, v -> k.contains "org.gradle.project."} ).each { k, v -> project.ext."${k.replace "org.gradle.project.", ""}" = v}
 ext {
     gradleVersionsUrl = "https://services.gradle.org/versions"
     gradleLatestReleaseNightlyJsonUrl = "$gradleVersionsUrl/release-nightly" as GStringImpl
@@ -58,14 +58,14 @@ String getLatestVersionMaven(String metadataUrl, String metadataPath, String fil
     if (!(checkMavenMetadata(metadataUrl, metadataFile, "MD5", "md5") && checkMavenMetadata(metadataUrl, metadataFile, "SHA-1", "sha1"))) {
         def json = parseLastGoodSettings false
         String name = metadataUrl.reverse().find("\\/.+?\\/").replace("/", "").reverse()
-        String ret = (json.dependencies.find { dependency -> dependency.name == name }).version
+        String ret = (json.dependencies.find { it.name == name }).version
         logger.log LogLevel.WARN, "Using version \'$ret\' of \'$name\' instead of the latest."
         return ret
     }
 
-    List<String> versions = new XmlSlurper().parse(metadataFile).versioning.versions.children().list().collect { v -> v.text() }
-    List<VersionNumber> filtered = versions.findAll { v -> v.contains(filter) }.collect { v -> VersionNumber.parse(v as String) }.sort()
-    return filtered.empty ? versions.collect { v -> VersionNumber.parse(v as String) }.sort().last() : filtered.last()
+    List<String> versions = new XmlSlurper().parse(metadataFile).versioning.versions.children().list().collect { it.text() }
+    List<VersionNumber> filtered = versions.findAll { it.contains(filter) }.collect { VersionNumber.parse(it as String) }.sort()
+    return filtered.empty ? versions.collect { VersionNumber.parse(it as String) }.sort().last() : filtered.last()
 }
 void updateGradleWrapperDistributionUrl(String newDistributionUrl) {
     Wrapper wrapper = tasks.wrapper as Wrapper
@@ -137,7 +137,7 @@ if (update) {
     def json = parseLastGoodSettings true
 
     updateGradleWrapperDistributionUrl project.ext.gradleDistributionUrl = json.gradle.distributionUrl as String
-    gradle.projectsLoaded { json.dependencies.each { dependency -> dependencies.add dependency.configuration as String, "$dependency.group:$dependency.name:$dependency.version" as String, { force = true } } }
+    gradle.projectsLoaded { json.dependencies.each { dependencies.add it.configuration as String, "$it.group:$it.name:$it.version" as String, { force = true } } }
     project.ext.minecraftForgeVersion = json.minecraft.version
     project.ext.minecraftMappings = json.minecraft.mappings
 }

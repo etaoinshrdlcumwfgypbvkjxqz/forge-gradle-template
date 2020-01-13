@@ -7,7 +7,7 @@
             "configuration": "apiCompileClasspath",
             "group": "org.apiguardian",
             "name": "apiguardian-api",
-            "version": "1.2.0-SNAPSHOT"
+            "version": "1.1.0"
         },
         {
             "configuration": "apiImplementation",
@@ -19,12 +19,12 @@
             "configuration": "apiRuntimeClasspath",
             "group": "org.apiguardian",
             "name": "apiguardian-api",
-            "version": "1.2.0-SNAPSHOT"
+            "version": "1.1.0"
         },
         {
             "configuration": "forgeGradleMc",
             "group": "net.minecraftforge",
-            "name": "forgeSrc",
+            "name": "forgeBin",
             "version": "1.12.2-14.23.5.2810"
         },
         {
@@ -418,16 +418,34 @@
             "version": "1.12.2-14.23.5.2810"
         },
         {
+            "configuration": "incrementalScalaAnalysisForapi",
+            "group": "org.apiguardian",
+            "name": "apiguardian-api",
+            "version": "1.1.0"
+        },
+        {
+            "configuration": "incrementalScalaAnalysisFortest",
+            "group": "org.junit.jupiter",
+            "name": "junit-jupiter-api",
+            "version": "5.6.0-RC1"
+        },
+        {
+            "configuration": "incrementalScalaAnalysisFortest",
+            "group": "org.junit.jupiter",
+            "name": "junit-jupiter-params",
+            "version": "5.6.0-RC1"
+        },
+        {
             "configuration": "testCompileClasspath",
             "group": "org.junit.jupiter",
             "name": "junit-jupiter-api",
-            "version": "5.6.0-SNAPSHOT"
+            "version": "5.6.0-RC1"
         },
         {
             "configuration": "testCompileClasspath",
             "group": "org.junit.jupiter",
             "name": "junit-jupiter-params",
-            "version": "5.6.0-SNAPSHOT"
+            "version": "5.6.0-RC1"
         },
         {
             "configuration": "testImplementation",
@@ -445,25 +463,31 @@
             "configuration": "testRuntimeClasspath",
             "group": "org.junit.jupiter",
             "name": "junit-jupiter-api",
-            "version": "5.6.0-SNAPSHOT"
+            "version": "5.6.0-RC1"
         },
         {
             "configuration": "testRuntimeClasspath",
             "group": "org.junit.jupiter",
             "name": "junit-jupiter-params",
-            "version": "5.6.0-SNAPSHOT"
+            "version": "5.6.0-RC1"
         },
         {
             "configuration": "testRuntimeClasspath",
             "group": "org.junit.jupiter",
             "name": "junit-jupiter-engine",
-            "version": "5.6.0-SNAPSHOT"
+            "version": "5.6.0-RC1"
         },
         {
             "configuration": "testRuntimeOnly",
             "group": "org.junit.jupiter",
             "name": "junit-jupiter-engine",
             "version": "+"
+        },
+        {
+            "configuration": "zinc",
+            "group": "com.typesafe.zinc",
+            "name": "zinc",
+            "version": "0.3.15"
         }
     ],
     "minecraft": {
