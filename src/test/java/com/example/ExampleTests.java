@@ -8,7 +8,7 @@ import java.net.URL;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-// TODO: (Optional) Write your tests.
+// TODO (Optional) Write your tests.
 @Testable
 @DisplayName("Example Tests")
 public class ExampleTests {

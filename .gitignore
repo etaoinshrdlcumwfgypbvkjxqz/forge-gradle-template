@@ -1,7 +1,7 @@
 ##################################################
 # Git Ignore
 ##################################################
-# TODO: (Optional) Configure .gitignore.
+# TODO (Optional) Configure .gitignore.
 # What git ignores.
 # Get latest from https://github.com/github/gitignore.
 
@@ -197,6 +197,3 @@ gradle-app.setting
 
 # Custom files
 ext.properties
-src/main/resources/mcmod.info
-src/main/resources/pack.mcmeta
-src/main/resources/version.properties

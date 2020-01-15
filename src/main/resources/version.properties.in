@@ -2,6 +2,6 @@
 # Version Properties
 ##################################################
 # suppress inspection "UnusedProperty" for whole file
-# TODO: (Optional) Remove version properties.
+# TODO (Optional) Remove version properties.
 # suppress inspection "SpellCheckingInspection"
 ${modId}.version=${version}

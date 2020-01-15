@@ -1,4 +1,4 @@
-<!-- TODO: Set real name and update year. -->
+<!-- TODO Set real name and update year. -->
 Copyright (C) 2019  
 
 Unless noted below, all content of this project is licensed under **LGPL-3.0**,

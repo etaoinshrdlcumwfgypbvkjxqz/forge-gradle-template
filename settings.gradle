@@ -1,6 +1,9 @@
 //////////////////////////////////////////////////
-// Gradle Settings
+// TITLE Gradle Settings
 //////////////////////////////////////////////////
 
-// TODO: Set project mod ID.
+
+/* SECTION variables */
+
+// TODO Set project mod ID.
 rootProject.name = "example"

@@ -3,7 +3,7 @@ package com.example;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-// TODO: Write your mod.
+// TODO Write your mod.
 @SuppressWarnings("unused")
 @Mod(modid = "${modId}",
         name = "${name}",
