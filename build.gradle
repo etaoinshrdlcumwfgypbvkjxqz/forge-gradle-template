@@ -238,7 +238,7 @@ task preprocessSourceMainJava(type: Sync, description: 'Prepare sources for proc
 task postprocessSourceMainJava(type: Sync, description: 'Finalize after processing main Java.') {
     from(tasks.processSourceMainJava.destinationDir as File) { exclude { it.directory ? it.path.contains('$') : it.path.endsWith('.in') } }
     into sourceSets.main.allJava.srcDirs.find { it.name == 'java_debug' }
-    fileMode 0444
+    doLast { destinationDir.eachFileRecurse { it.setReadOnly() } }
 }
 tasks.processSourceMainJava.dependsOn tasks.preprocessSourceMainJava
 tasks.processSourceMainJava.finalizedBy tasks.postprocessSourceMainJava
