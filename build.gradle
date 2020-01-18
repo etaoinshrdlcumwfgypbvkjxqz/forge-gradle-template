@@ -238,6 +238,8 @@ task preprocessSourceMainJava(type: Sync, description: 'Prepare sources for proc
 task postprocessSourceMainJava(type: Sync, description: 'Finalize after processing main Java.') {
     from(tasks.processSourceMainJava.destinationDir as File) { exclude { it.directory ? it.path.contains('$') : it.path.endsWith('.in') } }
     into sourceSets.main.allJava.srcDirs.find { it.name == 'java_debug' }
+
+    doFirst { destinationDir.eachFileRecurse { it.writable = true } }
     doLast { destinationDir.eachFileRecurse { it.setReadOnly() } }
 }
 tasks.processSourceMainJava.dependsOn tasks.preprocessSourceMainJava
@@ -267,6 +269,7 @@ processResources {
     inputs.property 'expand_dependants', processResourcesList(dependants as List<String>)
     inputs.property 'expand_pack_format', pack_format
 
+    Map<String, Object> e = inputs.properties.findAll { it.key.startsWith 'expand_' }.collectEntries { [it.key.replace('expand_', ''), it.value] } as Map<String, Object>
 
     // COMMENT replace stuff in the to-be-processed files, nothing else
     from(sourceSets.main.resources.srcDirs) {
@@ -274,18 +277,16 @@ processResources {
         rename ~/(.*)\.in/, '$1'
 
         // COMMENT replace variables
-        Map<String, Object> e = inputs.properties.findAll { it.key.startsWith 'expand_' }.collectEntries { [it.key.replace('expand_', ''), it.value] } as Map<String, Object>
-
         expand e
-
-        Binding eb = new Binding(e)
-        eachFile { it.path = evaluateGStringStringWithBinding it.path, eb }
     }
 
     // COMMENT copy everything else except the processed files
     from(sourceSets.main.resources.srcDirs) {
         exclude '**/*.in'
     }
+
+    Binding eb = new Binding(e)
+    eachFile { it.path = evaluateGStringStringWithBinding it.path, eb }
 }
 
 task syncProcessedResources(type: Sync, description: 'Sync processed resources.') {
