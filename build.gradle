@@ -345,13 +345,9 @@ task beforeJar(description: 'Delete synced processed resources.') {
         delete fileTree(dir: tasks.syncProcessedResources.destinationDir, excludes: ['**/*.class'])
     }
 }
+tasks.jar.dependsOn tasks.beforeJar
 
-tasks.each {
-    if (it instanceof org.gradle.jvm.tasks.Jar) {
-        it.exclude { it.directory ? it.path.contains('$') : it.path.endsWith('.in') }
-        it.dependsOn tasks.beforeJar
-    }
-}
+tasks.each { if (it instanceof org.gradle.jvm.tasks.Jar) it.exclude { it.directory ? it.path.contains('$') : it.path.endsWith('.in') } }
 
 
 artifacts {
