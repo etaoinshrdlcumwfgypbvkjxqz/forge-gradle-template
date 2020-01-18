@@ -183,19 +183,23 @@ dependencies {
     'runtime' is superseded by 'runtimeOnly'.
      */
 }
-
 stringToStringMap(customDependencies).each { String k, List<String> v -> v.each { dependencies.add k, evaluateGStringString(it) } }
 
 
 sourceSets {
-    main
+    main {
+        java {
+            srcDir 'src/main/java_debug'
+            include { it.path.contains('$')) }
+        }
+    }
     test
     api
 }
 
 
 tasks.sourceMainJava.enabled = false
-task processSourceMainJava(type: ProcessResources, description: 'Process main java.') {
+task processSourceMainJava(type: ProcessResources, description: 'Process main Java.') {
     inputs.property 'expand_modId', project.name
     inputs.property 'expand_name', name_
     inputs.property 'expand_version', version
@@ -206,12 +210,6 @@ task processSourceMainJava(type: ProcessResources, description: 'Process main ja
     inputs.property 'expand_group', project.group
 
     into tasks.sourceMainJava.output
-
-    delete { delete temporaryDir }
-    copy {
-        from tasks.sourceMainJava.source as FileCollection
-        into temporaryDir
-    }
 
     from(temporaryDir) {
         Map<String, Object> e = [:]
@@ -232,6 +230,17 @@ task processSourceMainJava(type: ProcessResources, description: 'Process main ja
     }
 }
 tasks.sourceMainJava.finalizedBy tasks.processSourceMainJava
+
+task preprocessSourceMainJava(type: ProcessResources, description: 'Prepare sources for processing main Java.') {
+    from tasks.sourceMainJava.source as FileCollection
+    into tasks.processSourceMainJava.temporaryDir
+}
+task postprocessSourceMainJava(type: ProcessResources, description: 'Finalize after processing main Java.') {
+    from(tasks.processSourceMainJava.destinationDir as File) { exclude { it.directory ? it.path.contains('$') : it.path.endsWith('.in') } }
+    into sourceSets.main.allJava.srcDirs.find { it.name == 'java_debug' }
+}
+tasks.processSourceMainJava.dependsOn tasks.preprocessSourceMainJava
+tasks.processSourceMainJava.finalizedBy tasks.postprocessSourceMainJava
 
 
 static <E> String processResourcesList(List<E> l) { l.empty ? '[]' : l.toListString().replace('[', '["').replace(']', '"]').replace(', ', '", "') }
