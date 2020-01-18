@@ -8,6 +8,7 @@ import java.util.regex.Pattern
 
 import static java.io.File.separator
 
+
 /* SECTION build script */
 
 buildscript {
@@ -294,11 +295,6 @@ task syncProcessedResources(type: Sync, description: 'Sync processed resources.'
 }
 tasks.processResources.finalizedBy tasks.syncProcessedResources
 
-task deleteCopiedProcessedResources(type: Delete, description: 'Delete synced processed resources.') {
-    delete fileTree(dir: tasks.syncProcessedResources.destinationDir, excludes: ['**/*.class'])
-}
-tasks.jar.dependsOn tasks.deleteCopiedProcessedResources
-
 
 test {
     useJUnitPlatform()
@@ -343,7 +339,19 @@ task javadocJar(type: Jar, dependsOn: 'javadoc') {
     classifier 'javadoc'
 }
 
-tasks.each { if (it instanceof org.gradle.jvm.tasks.Jar) it.exclude { it.directory ? it.path.contains('$') : it.path.endsWith('.in') } }
+task beforeJar(description: 'Delete synced processed resources.') {
+    doLast {
+        sourceSets.main.allSource.srcDirs.each { it.mkdir() }
+        delete fileTree(dir: tasks.syncProcessedResources.destinationDir, excludes: ['**/*.class'])
+    }
+}
+
+tasks.each {
+    if (it instanceof org.gradle.jvm.tasks.Jar) {
+        it.exclude { it.directory ? it.path.contains('$') : it.path.endsWith('.in') }
+        it.dependsOn tasks.beforeJar
+    }
+}
 
 
 artifacts {

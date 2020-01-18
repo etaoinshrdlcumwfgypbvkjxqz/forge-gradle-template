@@ -1,4 +1,4 @@
-package com.example;
+package $group__.$modId__;
 
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
