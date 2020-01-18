@@ -339,7 +339,8 @@ task javadocJar(type: Jar, dependsOn: 'javadoc') {
     classifier 'javadoc'
 }
 
-task beforeJar(description: 'Delete synced processed resources.') {
+task beforeJar(description: 'Prepare stuff for jaring.') {
+    mustRunAfter tasks.syncProcessedResources
     doLast {
         sourceSets.main.allSource.srcDirs.each { it.mkdir() }
         delete fileTree(dir: tasks.syncProcessedResources.destinationDir, excludes: ['**/*.class'])
