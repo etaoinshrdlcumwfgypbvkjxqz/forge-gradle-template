@@ -226,7 +226,7 @@ task processSourceMainJava(type: ProcessResources, description: 'Process main ja
         Binding eb = new Binding(e)
         eachFile {
             File f = file "$temporaryDir.absolutePath/$it.sourcePath"
-            f.text = f.text.replaceAll(~/\$(.*)__/) { "\${${it[1]}}" }
+            f.text = f.text.replaceAll(~/\$(.*?)__/) { "\${${it[1]}}" }
             it.path = evaluateGStringStringWithBinding it.path, eb
         }
     }
