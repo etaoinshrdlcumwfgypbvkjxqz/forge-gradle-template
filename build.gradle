@@ -8,7 +8,6 @@ import java.util.regex.Pattern
 
 import static java.io.File.separator
 
-
 /* SECTION build script */
 
 buildscript {
@@ -213,7 +212,7 @@ task processSourceMainJava(type: ProcessResources, description: 'Process main Ja
 
     from(temporaryDir) {
         Map<String, Object> e = [:]
-        inputs.properties.each { if (it.key.startsWith("expand_")) {
+        inputs.properties.each { if (it.key.startsWith('expand_')) {
             String k = it.key.replace('expand_', '')
             e.put k, it.value
             e.put "${k}__".toString(), it.value
@@ -223,7 +222,7 @@ task processSourceMainJava(type: ProcessResources, description: 'Process main Ja
 
         Binding eb = new Binding(e)
         eachFile {
-            File f = file "$temporaryDir.absolutePath/$it.sourcePath"
+            File f = file "$temporaryDir.absolutePath$separator$it.sourcePath"
             f.text = f.text.replaceAll(~/\$(.*?)__/) { "\${${it[1]}}" }
             it.path = evaluateGStringStringWithBinding it.path, eb
         }
@@ -231,13 +230,14 @@ task processSourceMainJava(type: ProcessResources, description: 'Process main Ja
 }
 tasks.sourceMainJava.finalizedBy tasks.processSourceMainJava
 
-task preprocessSourceMainJava(type: ProcessResources, description: 'Prepare sources for processing main Java.') {
+task preprocessSourceMainJava(type: Sync, description: 'Prepare sources for processing main Java.') {
     from tasks.sourceMainJava.source as FileCollection
     into tasks.processSourceMainJava.temporaryDir
 }
-task postprocessSourceMainJava(type: ProcessResources, description: 'Finalize after processing main Java.') {
+task postprocessSourceMainJava(type: Sync, description: 'Finalize after processing main Java.') {
     from(tasks.processSourceMainJava.destinationDir as File) { exclude { it.directory ? it.path.contains('$') : it.path.endsWith('.in') } }
     into sourceSets.main.allJava.srcDirs.find { it.name == 'java_debug' }
+    fileMode 0444
 }
 tasks.processSourceMainJava.dependsOn tasks.preprocessSourceMainJava
 tasks.processSourceMainJava.finalizedBy tasks.postprocessSourceMainJava
@@ -287,14 +287,15 @@ processResources {
     }
 }
 
-task copyProcessedResources(type: ProcessResources, description: 'Copy processed resources.') {
-    from tasks.processSourceMainJava.destinationDir as File
+task syncProcessedResources(type: Sync, description: 'Sync processed resources.') {
+    from tasks.processResources.destinationDir as File
     into tasks.compileJava.destinationDir
+    preserve { include '**/*.class' }
 }
-tasks.processResources.finalizedBy tasks.copyProcessedResources
+tasks.processResources.finalizedBy tasks.syncProcessedResources
 
-task deleteCopiedProcessedResources(type: Delete, description: 'Delete copied processed resources.') {
-    delete fileTree(dir: tasks.copyProcessedResources.destinationDir, excludes: ['**/*.class'])
+task deleteCopiedProcessedResources(type: Delete, description: 'Delete synced processed resources.') {
+    delete fileTree(dir: tasks.syncProcessedResources.destinationDir, excludes: ['**/*.class'])
 }
 tasks.jar.dependsOn tasks.deleteCopiedProcessedResources
 
