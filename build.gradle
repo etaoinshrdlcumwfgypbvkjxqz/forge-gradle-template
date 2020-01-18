@@ -190,7 +190,7 @@ sourceSets {
     main {
         java {
             srcDir 'src/main/java_debug'
-            include { it.path.contains('$')) }
+            include { it.path.contains('$') }
         }
     }
     test
