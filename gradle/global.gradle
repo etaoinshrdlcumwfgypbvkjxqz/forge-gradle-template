@@ -14,15 +14,15 @@ String rootDir = name == 'buildSrc' ? "$rootDir${separator}.." : rootDir
 /* SECTION extension variables */
 
 project.ext {
-    // COMMENT arguments
+	// COMMENT arguments
 
-    buildType = parseArgument 'buildType', 'BUILD_TYPE', 'DEBUG'
-    update = parseArgument('update', 'UPDATE', false).toBoolean()
-    strictDigestCheck = parseArgument('strictDigestCheck', 'STRICT_DIGEST_CHECK', false).toBoolean()
+	buildType = parseArgument 'buildType', 'BUILD_TYPE', 'DEBUG'
+	update = parseArgument('update', 'UPDATE', false).toBoolean()
+	strictDigestCheck = parseArgument('strictDigestCheck', 'STRICT_DIGEST_CHECK', false).toBoolean()
 
 
-    // COMMENT variables
+	// COMMENT variables
 
-    lastGoodSettingsPath = "$rootDir${separator}gradle${separator}last-good-settings.json".toString()
-    repositoryDirectory = "$buildDir${separator}repo".toString()
+	lastGoodSettingsPath = "$rootDir${separator}gradle${separator}last-good-settings.json".toString()
+	repositoryDirectory = "$buildDir${separator}repo".toString()
 }

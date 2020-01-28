@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Force Update Settings" type="GradleRunConfiguration" factoryName="Gradle" folderName="Miscellaneous">
+  <configuration default="false" name="Update Settings" type="GradleRunConfiguration" factoryName="Gradle" folderName="Miscellaneous">
     <ExternalSystemSettings>
       <option name="executionName" />
       <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -9,7 +9,9 @@
         <list />
       </option>
       <option name="taskNames">
-        <list />
+        <list>
+          <option value="build" />
+        </list>
       </option>
       <option name="vmOptions" value="" />
     </ExternalSystemSettings>
