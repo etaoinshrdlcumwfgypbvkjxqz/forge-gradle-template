@@ -6,4 +6,4 @@
 /* SECTION variables */
 
 // TODO Set project mod ID.
-rootProject.name = "example"
+rootProject.name = 'example'
