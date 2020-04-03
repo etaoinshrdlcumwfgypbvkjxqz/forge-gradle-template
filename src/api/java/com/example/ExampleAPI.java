@@ -6,7 +6,7 @@ import org.apiguardian.api.API;
 @SuppressWarnings("unused")
 @API(status = API.Status.STABLE, since = "1.0")
 public class ExampleAPI {
-    public static void example() {
-        System.out.println("Hello, world!");
-    }
+	public static void example() {
+		System.out.println("Hello, world!");
+	}
 }
