@@ -12,10 +12,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @Testable
 @DisplayName("Example Tests")
 public class ExampleTests {
-	@Test
-	@DisplayName("Find Dummy")
-	void findDummy() {
-		URL resource = getClass().getResource("/dummy.txt");
-		assertNotNull(resource, "Resources NOT properly copied");
-	}
+    @Test
+    @DisplayName("Find Dummy")
+    void findDummy() {
+        URL resource = getClass().getResource("/dummy.txt");
+        assertNotNull(resource, "Resources NOT properly copied");
+    }
 }
