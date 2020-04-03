@@ -1,7 +1,6 @@
 ##################################################
 # Git Ignore
 ##################################################
-# TODO (Optional) Configure .gitignore.
 # What git ignores.
 # Get latest from https://github.com/github/gitignore.
 
@@ -193,7 +192,7 @@ gradle-app.setting
 # Custom definitions
 
 # Minecraft run directory
-/run/
+run/
 
 # Custom files
 ext*.properties
