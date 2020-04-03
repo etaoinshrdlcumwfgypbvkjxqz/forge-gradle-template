@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////
-// TITLE Gradle Settings
+// TITLE Plugins
 //////////////////////////////////////////////////
 
+/* SECTION application */
 
-/* SECTION variables */
-
-rootProject.name = 'buildSrc'
+apply plugin: 'java-library'
+apply plugin: 'scala'
