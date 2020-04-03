@@ -116,6 +116,8 @@ ext {
 /* SECTION application */
 
 apply from: "$modulesDir${separator}optional${separator}minecraft-forge.gradle"
+// TODO (Optional) Move the main project for a multi-project build.
+apply from: "$modulesDir${separator}optional${separator}mod.gradle"
 
 
 /* SECTION configuration */
