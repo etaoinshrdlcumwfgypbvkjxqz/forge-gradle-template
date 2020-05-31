@@ -93,8 +93,8 @@ String getLatestVersionMaven(String metadataUrl, String metadataPath, String fil
     checkMavenMetadata metadataUrl, metadataFile, 'SHA-1', 'sha1'
 
     List<String> versions = new XmlSlurper().parse(metadataFile).versioning.versions.children().list().collect { it.text() }
-    List<VersionNumber> filtered = versions.findAll { it.contains(filter) }.collect { VersionNumber.parse it }.sort()
-    return filtered.empty ? versions.collect { VersionNumber.parse it }.sort().last() : filtered.last()
+    List<VersionNumber> filtered = versions.findAll { it.contains(filter) }
+    return (filtered.empty ? versions : filtered).last()
 }
 
 void updateGradleWrapperDistributionUrl(String newDistributionUrl) {
