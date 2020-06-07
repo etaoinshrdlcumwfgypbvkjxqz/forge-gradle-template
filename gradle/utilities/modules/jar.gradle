@@ -1,0 +1,39 @@
+//////////////////////////////////////////////////
+// TITLE Jar
+//////////////////////////////////////////////////
+
+import static java.io.File.separator
+
+/* SECTION check */
+
+apply from: "$utilitiesDir${separator}meta${separator}application.gradle"
+checkApply.call([])
+
+/* SECTION application */
+
+apply plugin: 'com.github.johnrengelman.shadow'
+
+/* SECTION configuration */
+
+// COMMENT append
+afterEvaluate {
+    task deobfJar(type: Jar, dependsOn: tasks.jar) {
+        from sourceSets.main.java.outputDir
+        classifier 'dev'
+    }
+
+    task sourceJar(type: Jar, dependsOn: tasks.jar) {
+        from tasks.compileJava.source
+        classifier 'sources'
+    }
+
+    task javadocJar(type: Jar, dependsOn: tasks.javadoc) {
+        from tasks.javadoc.destinationDir
+        classifier 'javadoc'
+    }
+
+    tasks.withType(org.gradle.jvm.tasks.Jar) { org.gradle.jvm.tasks.Jar t ->
+        exclude { it.directory ? it.path.contains('$') : it.path.endsWith('.in') }
+        if (!name.startsWith('postProcess')) artifacts.archives t
+    }
+}

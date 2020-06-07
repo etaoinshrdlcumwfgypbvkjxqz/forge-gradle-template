@@ -1,0 +1,25 @@
+//////////////////////////////////////////////////
+// TITLE IDE
+//////////////////////////////////////////////////
+
+
+/* SECTION application */
+
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'org.jetbrains.gradle.plugin.idea-ext'
+
+
+/* SECTION configuration */
+
+// COMMENT append
+afterEvaluate {
+    eclipse.classpath { downloadSources = downloadJavadoc = true }
+    idea.module {
+        downloadSources = downloadJavadoc = true
+        excludeDirs += [file(minecraftRunDir), file(repositoryDirectoryLocal)]
+
+        // COMMENT the below code should, but does not work
+        // CODE scopes.RUNTIME.plus << configurations.debug
+    }
+}
