@@ -1,21 +1,12 @@
 package $group__.$modId__;
 
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 // TODO Write your mod.
-@SuppressWarnings({"unused", "SpellCheckingInspection"})
-@Mod(modid = "${modId}",
-		name = "${name}",
-		version = "${version}",
-		dependencies = "${dependencies}",
-		useMetadata = true,
-		acceptedMinecraftVersions = "${minecraftVersionRange}",
-		certificateFingerprint = "${certificateFingerprint}",
-		updateJSON = "${updateJSON}")
+@Mod("${modId}")
+@Mod.EventBusSubscriber
 public class Example {
-	@Mod.EventHandler
-	public void preInitialize(FMLPreInitializationEvent event) {
-		System.out.println("Hello, world!");
-	}
+	@SuppressWarnings("unused")
+	public void setupCommon(@SuppressWarnings("unused") FMLCommonSetupEvent event) { System.out.println("Hello, world!"); }
 }
