@@ -2,9 +2,6 @@
 // TITLE API
 //////////////////////////////////////////////////
 
-
-/* SECTION configurations */
-
 sourceSets {
     api
 }
