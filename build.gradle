@@ -132,5 +132,12 @@ afterEvaluate {
                 t.configure { enabled false }
             } else task it.name, dependsOn: it
         }
+        pSub.tasks.whenTaskAdded { Task tSub ->
+            Task t = tasks.findByName(tSub.name)
+            if (t != null) {
+                t.dependsOn tSub
+                t.configure { enabled false }
+            } else task tSub.name, dependsOn: tSub
+        }
     }
 }
