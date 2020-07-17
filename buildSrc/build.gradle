@@ -4,33 +4,18 @@
 
 import static java.io.File.separator
 
-
-/* SECTION variables */
-
 final String rootDir = "$projectDir${separator}.."
-
-
-/* SECTION extra variables */
 
 ext {
     ext.rootDir = rootDir
     utilitiesDir = "$rootDir${separator}gradle${separator}utilities".toString()
 }
 
-
-/* SECTION application */
-
 apply from: "$utilitiesDir${separator}io${separator}io.gradle"
 apply from: "$utilitiesDir${separator}io${separator}properties${separator}properties.gradle"
 apply from: "$utilitiesDir${separator}io${separator}properties${separator}ext.properties.gradle"
 
-
-/* SECTION extra variables */
-
 loadExt.call "$rootDir${separator}module.properties"
-
-
-/* SECTION methods */
 
 void updateGradleWrapperDistributionUrl(String newDistributionUrl) {
     Wrapper wrapper = tasks.wrapper
@@ -60,9 +45,6 @@ void updateGradleWrapperDistributionUrl(String newDistributionUrl) {
         throw new IllegalStateException("Gradle wrapper distribution URL updated from '$oldDistributionUrl' to '$newDistributionUrl', re-run the build to apply the changes")
     }
 }
-
-
-/* SECTION configuration */
 
 updateGradleWrapperDistributionUrl gradleDistributionUrl
 

@@ -1,4 +1,4 @@
-package $group__.$modId__;
+package $group__;
 
 import org.apiguardian.api.API;
 

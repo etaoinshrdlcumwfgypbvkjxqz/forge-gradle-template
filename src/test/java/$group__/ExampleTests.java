@@ -1,4 +1,4 @@
-package $group__.$modId__;
+package $group__;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
