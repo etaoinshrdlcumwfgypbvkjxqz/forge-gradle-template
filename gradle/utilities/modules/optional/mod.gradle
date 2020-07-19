@@ -3,6 +3,7 @@
 //////////////////////////////////////////////////
 
 archivesBaseName = rootProject.name
+
 minecraft {
 	// Default run configurations.
 	// These can be tweaked, removed, or duplicated as needed.
@@ -22,6 +23,12 @@ minecraft {
 			mods.create(modId) {
 				//noinspection GroovyAssignabilityCheck
 				source sourceSets.main
+				afterEvaluate {
+					// COMMENT add non-mod modules for correct classloading behavior
+					configurations.runtimeClasspath.allDependencies.each { dependency ->
+						if (dependency instanceof ProjectDependency) source((SourceSet) dependency.dependencyProject.sourceSets.main)
+					}
+				}
 			}
 		}
 
@@ -40,6 +47,12 @@ minecraft {
 			mods.create(modId) {
 				//noinspection GroovyAssignabilityCheck
 				source sourceSets.main
+				afterEvaluate {
+					// COMMENT add non-mod modules for correct classloading behavior
+					configurations.runtimeClasspath.allDependencies.each { dependency ->
+						if (dependency instanceof ProjectDependency) source((SourceSet) dependency.dependencyProject.sourceSets.main)
+					}
+				}
 			}
 		}
 
@@ -60,7 +73,14 @@ minecraft {
 			mods.create(modId) {
 				//noinspection GroovyAssignabilityCheck
 				source sourceSets.main
+				afterEvaluate {
+					// COMMENT add non-mod modules for correct classloading behavior
+					configurations.runtimeClasspath.allDependencies.each { dependency ->
+						if (dependency instanceof ProjectDependency) source((SourceSet) dependency.dependencyProject.sourceSets.main)
+					}
+				}
 			}
 		}
 	}
 }
+
