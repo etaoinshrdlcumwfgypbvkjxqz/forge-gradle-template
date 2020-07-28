@@ -7,74 +7,74 @@ import java.util.regex.Pattern
 import static java.io.File.separator
 
 buildscript {
-    repositories {
-        jcenter()
-        gradlePluginPortal()
-        maven {
-            name = 'Minecraft Forge'
-            url = 'https://files.minecraftforge.net/maven'
-        }
-    }
+	repositories {
+		jcenter()
+		gradlePluginPortal()
+		maven {
+			name = 'Minecraft Forge'
+			url = 'https://files.minecraftforge.net/maven'
+		}
+	}
 
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
-        classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.4'
-    }
-    // COMMENT Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
+	dependencies {
+		classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+		classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.4'
+	}
+	// COMMENT Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 }
 
 configurations {
-    replaced {
-        canBeResolved false
-        canBeConsumed false
-    }
+	replaced {
+		canBeResolved false
+		canBeConsumed false
+	}
 }
 
 allprojects {
-    ext {
-        utilitiesDir = "$rootDir${separator}gradle${separator}utilities".toString()
-        modulesDir = "$utilitiesDir${separator}modules".toString()
-    }
+	ext {
+		utilitiesDir = "$rootDir${separator}gradle${separator}utilities".toString()
+		modulesDir = "$utilitiesDir${separator}modules".toString()
+	}
 
-    apply from: "$modulesDir${separator}plugins.gradle"
+	apply from: "$modulesDir${separator}plugins.gradle"
 
-    apply from: "$utilitiesDir${separator}miscellaneous.gradle"
-    apply from: "$utilitiesDir${separator}globals.gradle"
-    apply from: "$utilitiesDir${separator}collections.gradle"
-    apply from: "$utilitiesDir${separator}strings.gradle"
-    apply from: "$utilitiesDir${separator}io${separator}io.gradle"
-    apply from: "$utilitiesDir${separator}io${separator}properties${separator}properties.gradle"
-    apply from: "$utilitiesDir${separator}io${separator}properties${separator}ext.properties.gradle"
+	apply from: "$utilitiesDir${separator}miscellaneous.gradle"
+	apply from: "$utilitiesDir${separator}globals.gradle"
+	apply from: "$utilitiesDir${separator}collections.gradle"
+	apply from: "$utilitiesDir${separator}strings.gradle"
+	apply from: "$utilitiesDir${separator}io${separator}io.gradle"
+	apply from: "$utilitiesDir${separator}io${separator}properties${separator}properties.gradle"
+	apply from: "$utilitiesDir${separator}io${separator}properties${separator}ext.properties.gradle"
 
-    loadExt.call "$projectDir${separator}module.properties"
+	loadExt.call "$projectDir${separator}module.properties"
 
-    apply from: "$modulesDir${separator}versioning.gradle"
-    apply from: "$modulesDir${separator}information.gradle"
+	apply from: "$modulesDir${separator}versioning.gradle"
+	apply from: "$modulesDir${separator}information.gradle"
 
-    apply from: "$modulesDir${separator}repositories.gradle"
-    apply from: "$modulesDir${separator}dependencies.gradle"
+	apply from: "$modulesDir${separator}repositories.gradle"
+	apply from: "$modulesDir${separator}dependencies.gradle"
 
-    apply from: "$modulesDir${separator}source.gradle"
-    apply from: "$modulesDir${separator}resources.gradle"
-    apply from: "$modulesDir${separator}javadoc.gradle"
+	apply from: "$modulesDir${separator}source.gradle"
+	apply from: "$modulesDir${separator}resources.gradle"
+	apply from: "$modulesDir${separator}javadoc.gradle"
 
-    apply from: "$modulesDir${separator}optional${separator}test.gradle"
-    apply from: "$modulesDir${separator}jar.gradle"
+	apply from: "$modulesDir${separator}optional${separator}test.gradle"
+	apply from: "$modulesDir${separator}jar.gradle"
 
-    apply from: "$modulesDir${separator}optional${separator}ide.gradle"
+	apply from: "$modulesDir${separator}optional${separator}ide.gradle"
 
-    // COMMENT append
-    afterEvaluate { storeExt.call() }
+	// COMMENT append
+	afterEvaluate { storeExt.call() }
 }
 
 ext {
-    // COMMENT game
-    minecraftVersion = minecraftForgeVersion.split('-').first()
-    String[] minecraftVersions = minecraftVersion.split Pattern.quote('.')
-    minecraftVersionMajor = minecraftVersions.first().toInteger()
-    minecraftVersionMinor = minecraftVersions[1].toInteger()
-    // COMMENT mod
-    modId = project.name
+	// COMMENT game
+	minecraftVersion = minecraftForgeVersion.split('-').first()
+	String[] minecraftVersions = minecraftVersion.split Pattern.quote('.')
+	minecraftVersionMajor = minecraftVersions.first().toInteger()
+	minecraftVersionMinor = minecraftVersions[1].toInteger()
+	// COMMENT mod
+	modId = project.name
 }
 
 apply from: "$modulesDir${separator}optional${separator}scala.gradle"
@@ -84,59 +84,59 @@ apply from: "$modulesDir${separator}optional${separator}api.gradle"
 apply from: "$modulesDir${separator}optional${separator}publishing.gradle"
 
 makeSourceTasks.call { Task it ->
-    //noinspection GrUnresolvedAccess
-    it.inputs.properties([
-            expand_group: project.group,
-            expand_modId: modId,
-    ])
+	//noinspection GrUnresolvedAccess
+	it.inputs.properties([
+			expand_group: project.group,
+			expand_modId: modId,
+	])
 }
 
 makeResourcesTasks.call { Task it ->
-    //noinspection GrUnresolvedAccess
-    it.inputs.properties([
-            expand_modLoader         : modLoader,
-            expand_loaderVersion     : loaderVersion,
-            expand_issueTrackerURLKey: issueTrackerURL.empty ? '' : 'issueTrackerURL=',
-            expand_issueTrackerURL   : issueTrackerURL.empty ? '' : "\"$issueTrackerURL\"",
-            expand_showAsResourcePack: showAsResourcePack,
-            expand_modId             : modId,
-            expand_version           : version,
-            expand_displayName       : name_,
-            expand_namespaceKey      : namespace.empty ? '' : 'namespace=',
-            expand_namespace         : namespace.empty ? '' : "\"$namespace\"",
-            expand_updateJSONURLKey  : updateJSONURL.empty ? '' : 'updateJSONURL=',
-            expand_updateJSONURL     : updateJSONURL.empty ? '' : "\"$updateJSONURL\"",
-            expand_displayURLKey     : displayURL.empty ? '' : 'displayURL=',
-            expand_displayURL        : displayURL.empty ? '' : "\"$displayURL\"",
-            expand_logoFile          : logoFile,
-            expand_credits           : credits,
-            expand_authors           : authors,
-            expand_description       : project.description,
-            expand_dependencies      : dependencies_,
-            expand_name              : name_,
-            expand_pack_format       : pack_format,
-    ])
+	//noinspection GrUnresolvedAccess
+	it.inputs.properties([
+			expand_modLoader         : modLoader,
+			expand_loaderVersion     : loaderVersion,
+			expand_issueTrackerURLKey: issueTrackerURL.empty ? '' : 'issueTrackerURL=',
+			expand_issueTrackerURL   : issueTrackerURL.empty ? '' : "\"$issueTrackerURL\"",
+			expand_showAsResourcePack: showAsResourcePack,
+			expand_modId             : modId,
+			expand_version           : version,
+			expand_displayName       : name_,
+			expand_namespaceKey      : namespace.empty ? '' : 'namespace=',
+			expand_namespace         : namespace.empty ? '' : "\"$namespace\"",
+			expand_updateJSONURLKey  : updateJSONURL.empty ? '' : 'updateJSONURL=',
+			expand_updateJSONURL     : updateJSONURL.empty ? '' : "\"$updateJSONURL\"",
+			expand_displayURLKey     : displayURL.empty ? '' : 'displayURL=',
+			expand_displayURL        : displayURL.empty ? '' : "\"$displayURL\"",
+			expand_logoFile          : logoFile,
+			expand_credits           : credits,
+			expand_authors           : authors,
+			expand_description       : project.description,
+			expand_dependencies      : dependencies_,
+			expand_name              : name_,
+			expand_pack_format       : pack_format,
+	])
 }
 
 makeJUnitPlatformTests.call()
 
 afterEvaluate {
-    Project pSub = project(subprojectMain)
-    if (pSub != project) {
-        evaluationDependsOn subprojectMain
-        pSub.tasks.each {
-            Task t = tasks.findByName(it.name)
-            if (t != null) {
-                t.dependsOn it
-                t.configure { enabled false }
-            } else task it.name, dependsOn: it
-        }
-        pSub.tasks.whenTaskAdded { Task tSub ->
-            Task t = tasks.findByName(tSub.name)
-            if (t != null) {
-                t.dependsOn tSub
-                t.configure { enabled false }
-            } else task tSub.name, dependsOn: tSub
-        }
-    }
+	Project pSub = project(subprojectMain)
+	if (pSub != project) {
+		evaluationDependsOn subprojectMain
+		pSub.tasks.each {
+			Task t = tasks.findByName(it.name)
+			if (t != null) {
+				t.dependsOn it
+				t.configure { enabled false }
+			} else task it.name, dependsOn: it
+		}
+		pSub.tasks.whenTaskAdded { Task tSub ->
+			Task t = tasks.findByName(tSub.name)
+			if (t != null) {
+				t.dependsOn tSub
+				t.configure { enabled false }
+			} else task tSub.name, dependsOn: tSub
+		}
+	}
 }
