@@ -8,6 +8,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 // TODO Write your mod.
 @Mod("${modId}")
 public class Example {
+	@SuppressWarnings("ThisEscapedInObjectConstruction")
 	public Example() { Bus.MOD.bus().get().register(this); }
 
 	@SubscribeEvent
