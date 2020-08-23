@@ -44,5 +44,7 @@ project.ext.makeResourcesTasks = { Closure c ->
 				markedForDeletion.each { it.deleteDir() }
 			}
 		}
+
+		tasks."compile${taskSourceSetName}Java".finalizedBy t // COMMENT fix resources not processed
 	}
 }
