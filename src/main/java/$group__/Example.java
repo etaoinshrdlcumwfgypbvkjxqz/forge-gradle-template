@@ -6,7 +6,7 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 // TODO Write your mod.
-@Mod("${modId}")
+@Mod("${modID}")
 public class Example {
 	@SuppressWarnings("ThisEscapedInObjectConstruction")
 	public Example() { Bus.MOD.bus().get().register(this); }

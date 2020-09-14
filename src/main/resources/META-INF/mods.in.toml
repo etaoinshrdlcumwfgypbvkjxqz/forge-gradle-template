@@ -8,7 +8,7 @@ ${ issueTrackerURLKey }${ issueTrackerURL }
 showAsResourcePack = ${ showAsResourcePack }
 
 [[mods]]
-modId = "${modId}"
+modId = "${modID}"
 ${ namespaceKey }${ namespace }
 version = "${version}"
 displayName = "${displayName}"

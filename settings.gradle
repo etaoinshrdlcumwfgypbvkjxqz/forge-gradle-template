@@ -4,3 +4,5 @@
 
 // TODO Set project mod ID.
 rootProject.name = 'example'
+
+enableFeaturePreview 'STABLE_PUBLISHING'
