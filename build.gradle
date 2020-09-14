@@ -57,7 +57,7 @@ allprojects {
 	apply from: "$modulesDir${separator}repositories.gradle"
 	apply from: "$modulesDir${separator}dependencies.gradle"
 
-	apply from: "$modulesDir${separator}source.gradle"
+	apply from: "$modulesDir${separator}sources.gradle"
 	apply from: "$modulesDir${separator}resources.gradle"
 	apply from: "$modulesDir${separator}javadoc.gradle"
 
@@ -86,7 +86,7 @@ apply from: "$modulesDir${separator}optional${separator}mod.gradle"
 apply from: "$modulesDir${separator}optional${separator}api.gradle"
 apply from: "$modulesDir${separator}optional${separator}publishing.gradle"
 
-makeSourceTasks.call { Task it ->
+makeSourcesTasks.call { Task it ->
 	it.inputs.properties([
 			expand_group: project.group,
 			expand_modId: modId,
