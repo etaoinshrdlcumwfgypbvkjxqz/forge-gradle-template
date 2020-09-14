@@ -229,19 +229,21 @@ gradle-app.setting
 # Custom definitions
 
 # IntelliJ IDEA
-.idea/*.xml
 .idea/.name
+.idea/discord.xml
+.idea/sbt.xml
+.idea/scala_compiler.xml
 
-# Custom files
+# Generated
 ext*.properties
+generated/
+generated_/
+
+# Local repository
+/repo/
 
 # Minecraft generated run configurations
 /.idea/runConfigurations/*run*.xml
 
 # Minecraft run directory
-# TODO (Optional) Configurate Minecraft run directory.
 run/
-
-# Minecraft run directory
-# TODO (Optional) Configurate local repository directory.
-/repo/

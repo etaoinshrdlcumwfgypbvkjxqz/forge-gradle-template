@@ -9,7 +9,7 @@ import static java.io.File.separator
 apply from: "$utilitiesDir${separator}meta${separator}application.gradle"
 checkApply.call(['evaluateGStringString', 'createNewFile'])
 
-project.ext.makeSourceTasks = { Closure c ->
+project.ext.makeSourcesTasks = { Closure c ->
 	tasks.withType(AbstractCompile) { AbstractCompile t ->
 		// COMMENT Avoid messing around internal tasks.
 		if (name.contains('_')) return
@@ -29,6 +29,7 @@ project.ext.makeSourceTasks = { Closure c ->
 
 			doLast {
 				destinationDir.eachFileRecurse(FileType.FILES) {
+					it.setWritable true, false
 					// COMMENT standard
 					it.text = it.text.replace('\\', '\\\\').replaceAll(~/\$(.*?)__/) { "\${${it[1]}}" }.replaceAll ~/\$(?!\{)/, '\\\\\\$'
 				}
@@ -40,27 +41,31 @@ project.ext.makeSourceTasks = { Closure c ->
 
 			into temporaryDir
 			from(pre.temporaryDir) {
-				Map<String, Object> e = [:]
 				if (buildType == 'DEBUG') inputs.property 'expand_group', '$group__'
-				inputs.properties.each {
-					if (it.key.startsWith('expand_')) {
-						String k = it.key.replace('expand_', '')
-						e.put k, it.value
-						e.put "${k}__".toString(), it.value
-					}
-				}
+				Map<String, Object> e = inputs.properties
+						.findAll { it.key.startsWith 'expand_' }
+						.collectEntries {
+							String k = it.key.replace('expand_', '')
+							[(k): it.value, ("${k}__".toString()): it.value]
+						} as Map<String, Object>
 
 				expand e
 
 				Binding eb = new Binding(e)
 				eachFile {
-					//noinspection GrUnresolvedAccess
 					String parent = evaluateGStringString.call(it.relativePath.parent.pathString, eb).replace '.', separator
 					it.path = "$parent$separator${evaluateGStringString.call it.name, eb}"
 				}
 			}
 		} as Sync
 		t.dependsOn process
+
+		afterEvaluate {
+			t.dependsOn.each {
+				if (it != process)
+					pre.mustRunAfter it
+			}
+		}
 
 		t.source = process.destinationDir
 
@@ -69,7 +74,10 @@ project.ext.makeSourceTasks = { Closure c ->
 			classifier "$sourceSetName$language"
 			destinationDir = file "$buildDir${separator}replaced"
 
-			if (createNewFile.call(archivePath)) archivePath.text = 'PK\u0005\u0006\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000'
+			if (createNewFile.call(archivePath)) {
+				archivePath.setWritable true, false
+				archivePath.text = 'PK\u0005\u0006\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000'
+			}
 			gradle.projectsEvaluated { rootProject.dependencies.replaced files(archivePath) }
 		}
 
@@ -93,14 +101,10 @@ project.ext.makeSourceTasks = { Closure c ->
 // COMMENT append
 afterEvaluate {
 	tasks.withType(AbstractCompile) {
-		//noinspection GrUnresolvedAccess
 		options.fork = false
-		//noinspection GrUnresolvedAccess
 		options.compilerArgs << '-Xlint'
 
-		if (buildType == 'DEBUG') {
-			//noinspection GrUnresolvedAccess
+		if (buildType == 'DEBUG')
 			options.verbose = true
-		}
 	}
 }
