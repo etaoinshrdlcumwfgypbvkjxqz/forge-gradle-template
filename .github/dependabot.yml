@@ -5,10 +5,10 @@ updates:
     schedule:
       interval: daily
       time: "00:00"
-    open-pull-requests-limit: 0
+    open-pull-requests-limit: 99
   - package-ecosystem: gradle
     directory: "/buildSrc"
     schedule:
       interval: daily
       time: "00:00"
-    open-pull-requests-limit: 0
+    open-pull-requests-limit: 99
