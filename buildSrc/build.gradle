@@ -18,7 +18,7 @@ apply from: "$utilitiesDir${separator}io${separator}properties${separator}ext.pr
 loadExt.call "$rootDir${separator}module.properties"
 
 void updateGradleWrapperDistributionUrl(String newDistributionUrl) {
-	Wrapper wrapper = tasks.wrapper
+	Wrapper wrapper = tasks.wrapper // COMMENT cannot use Provider
 	Properties properties = new Properties()
 	File propertiesFile = file wrapper.propertiesFile.absolutePath.replace('buildSrc', '')
 	FileInputStream fis = new FileInputStream(propertiesFile)
