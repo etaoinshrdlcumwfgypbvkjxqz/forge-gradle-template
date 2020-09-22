@@ -2,7 +2,7 @@
 // TITLE Gradle Settings
 //////////////////////////////////////////////////
 
-// TODO Set project mod ID.
+// TODO Set project name.
 rootProject.name = 'example'
 
 enableFeaturePreview 'STABLE_PUBLISHING'
