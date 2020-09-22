@@ -1,4 +1,4 @@
-package $group__;
+package com.example;
 
 import org.apiguardian.api.API;
 
