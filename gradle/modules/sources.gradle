@@ -50,7 +50,7 @@ project.ext.makeSourcesTasks = { Closure c ->
 
 						Map<String, Object> e = inputs.properties
 								.findAll { it.key.startsWith 'expand_' }
-								.collectEntries {[(it.key.replace('expand_', '')): it.value] } as Map<String, Object>
+								.collectEntries { [(it.key.replace('expand_', '')): it.value] } as Map<String, Object>
 						expand e
 					}
 
@@ -73,6 +73,9 @@ project.ext.makeSourcesTasks = { Closure c ->
 // COMMENT append
 afterEvaluate {
 	tasks.withType(AbstractCompile).configureEach {
+		// COMMENT Avoid messing around internal tasks.
+		if (it.name.contains('_')) return
+
 		options.compilerArgs << '-Xlint'
 		options.annotationProcessorPath = configurations.annotationProcessor // COMMENT use new behavior
 
